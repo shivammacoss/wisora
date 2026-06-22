@@ -1,0 +1,36 @@
+import { z } from 'zod';
+import { Currency } from '@common/constants';
+
+/** Zod schemas consumed by the `validate` middleware at the HTTP boundary. */
+
+export const registerSchema = z.object({
+  name: z.string().min(2).max(80),
+  email: z.string().email(),
+  password: z.string().min(8).max(128),
+  currency: z.nativeEnum(Currency).optional(),
+});
+
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(1),
+});
+
+export const refreshSchema = z.object({
+  refreshToken: z.string().min(10),
+});
+
+export const googleSchema = z.object({
+  idToken: z.string().min(10),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(10),
+  password: z.string().min(8).max(128),
+});
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;

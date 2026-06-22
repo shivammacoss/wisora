@@ -1,0 +1,37 @@
+{
+  "name": "wisora",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wisora — Sacred Wisdom, Daily. Monorepo root.",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,green \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "build": "npm run build --workspace backend && npm run build --workspace frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md,css}\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "concurrently": "^9.1.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3"
+  },
+  "lint-staged": {
+    "frontend/**/*.{ts,tsx}": "npm run lint --workspace frontend --",
+    "backend/**/*.ts": "npm run lint --workspace backend --",
+    "**/*.{json,md,css}": "prettier --write"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "app": {
+    "name": "Wisora",
+    "tagline": "Sacred Wisdom, Daily"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out"
+  }
+}

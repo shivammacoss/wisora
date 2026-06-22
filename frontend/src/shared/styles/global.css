@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  /* Smooth scroll for in-page anchor navigation. */
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-cream font-sans text-body antialiased;
+}
+
+/* Calm, book-like rendering: generous tracking handled per-element. */
+h1,
+h2,
+h3 {
+  @apply font-serif text-ink;
+  text-wrap: balance;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
