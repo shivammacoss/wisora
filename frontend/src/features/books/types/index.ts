@@ -15,5 +15,13 @@ export interface Book {
   cover: string;
   /** Tailwind gradient classes for the card header. */
   accent: string;
+  /**
+   * Real cover artwork. Set this to show the actual book cover.
+   * Put the file in src/assets/images/ and import it, e.g.:
+   *   import gitaCover from '@assets/images/bhagavad-gita.jpg';
+   *   image: gitaCover
+   * Leave undefined to show the empty cover placeholder.
+   */
+  image?: string;
   chapters: Chapter[];
 }

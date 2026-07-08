@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { getBookBySlug, type Chapter } from '@features/books';
 import { ChapterRow, PaywallModal } from '@features/book';
+import { useChapterCheckout } from '@features/payments';
 import { chapterUnlocked, useAuthStore, useLibraryStore } from '@app/store';
 import { AppHeader } from '@shared/components/ui/AppHeader';
 import { BookCover } from '@shared/components/ui/BookCover';
@@ -22,6 +23,17 @@ export default function BookDetailPage(): JSX.Element {
 
   const [paywallChapter, setPaywallChapter] = useState<Chapter | null>(null);
 
+  // Grant access after a confirmed payment (real or demo), then open the reader.
+  // Declared before the early return below to satisfy the Rules of Hooks.
+  const checkout = useChapterCheckout({
+    onSuccess: (chapter) => {
+      if (!book) return;
+      unlockChapter(book.slug, chapter.order);
+      setPaywallChapter(null);
+      navigate(ROUTES.reader(book.slug, String(chapter.order)));
+    },
+  });
+
   if (!book) {
     return (
       <div className="min-h-screen bg-cream">
@@ -38,14 +50,6 @@ export default function BookDetailPage(): JSX.Element {
 
   const openReader = (chapter: Chapter): void =>
     navigate(ROUTES.reader(book.slug, String(chapter.order)));
-
-  const confirmUnlock = (): void => {
-    if (!paywallChapter) return;
-    unlockChapter(book.slug, paywallChapter.order);
-    const chapter = paywallChapter;
-    setPaywallChapter(null);
-    openReader(chapter);
-  };
 
   return (
     <div className="min-h-screen bg-cream">
@@ -117,8 +121,13 @@ export default function BookDetailPage(): JSX.Element {
         book={book}
         chapter={paywallChapter}
         currency={currency}
-        onClose={() => setPaywallChapter(null)}
-        onConfirm={confirmUnlock}
+        processing={checkout.processing}
+        error={checkout.error}
+        onClose={() => {
+          checkout.clearError();
+          setPaywallChapter(null);
+        }}
+        onPay={() => paywallChapter && checkout.start(book, paywallChapter, currency)}
       />
     </div>
   );

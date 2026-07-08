@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check, Lock, X } from 'lucide-react';
+import { AlertCircle, Check, Loader2, Lock, X } from 'lucide-react';
 import { Button } from '@features/landing/components/ui/Button';
 import { formatCurrency } from '@shared/utils/formatCurrency';
 import type { Currency } from '@shared/types';
@@ -11,29 +11,37 @@ interface PaywallModalProps {
   book: Book;
   chapter: Chapter | null;
   currency: Currency;
+  /** Payment in flight (creating order / opening checkout / verifying). */
+  processing?: boolean;
+  /** Error from the last checkout attempt, if any. */
+  error?: string | null;
   onClose: () => void;
-  /** Confirm purchase → unlock the chapter and open the reader. */
-  onConfirm: () => void;
+  /** Start the payment flow (opens Razorpay Checkout, or the demo sheet). */
+  onPay: () => void;
 }
 
-/** Lightweight paywall for locked chapters. Mock — wire to real payments later. */
+/** Paywall for locked chapters. "Unlock" launches the payment gateway. */
 export function PaywallModal({
   open,
   book,
   chapter,
   currency,
+  processing = false,
+  error = null,
   onClose,
-  onConfirm,
+  onPay,
 }: PaywallModalProps): JSX.Element {
-  // Close on Escape while open.
+  // Close on Escape while open (not while a payment is in flight).
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && !processing) onClose();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open, processing, onClose]);
+
+  const price = formatCurrency(1, currency);
 
   return (
     <AnimatePresence>
@@ -48,7 +56,7 @@ export function PaywallModal({
           <button
             type="button"
             aria-label="Close"
-            onClick={onClose}
+            onClick={() => !processing && onClose()}
             className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
           />
 
@@ -67,7 +75,8 @@ export function PaywallModal({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="absolute right-4 top-4 rounded-full p-1.5 text-muted transition-colors hover:bg-white hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+              disabled={processing}
+              className="absolute right-4 top-4 rounded-full p-1.5 text-muted transition-colors hover:bg-white hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:opacity-40"
             >
               <X className="h-5 w-5" />
             </button>
@@ -87,9 +96,7 @@ export function PaywallModal({
             </p>
 
             <div className="mt-6 flex items-baseline gap-2">
-              <span className="font-serif text-5xl font-extrabold text-gold">
-                {formatCurrency(1, currency)}
-              </span>
+              <span className="font-serif text-5xl font-extrabold text-gold">{price}</span>
               <span className="text-sm text-muted">lifetime access</span>
             </div>
 
@@ -103,18 +110,28 @@ export function PaywallModal({
               )}
             </ul>
 
+            {error && (
+              <p className="mt-5 flex items-start gap-2 rounded-xl bg-red-50 px-3 py-2.5 text-sm text-red-700">
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> {error}
+              </p>
+            )}
+
             <div className="mt-7 flex flex-col gap-3 sm:flex-row-reverse">
-              <Button variant="gold" className="sm:flex-1" onClick={onConfirm}>
-                Unlock for {formatCurrency(1, currency)}
+              <Button
+                variant="gold"
+                className="sm:flex-1"
+                onClick={onPay}
+                disabled={processing}
+                leftIcon={processing ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
+              >
+                {processing ? 'Opening…' : `Unlock for ${price}`}
               </Button>
-              <Button variant="outline" className="sm:flex-1" onClick={onClose}>
+              <Button variant="outline" className="sm:flex-1" onClick={onClose} disabled={processing}>
                 Maybe later
               </Button>
             </div>
 
-            <p className="mt-4 text-center text-xs text-muted">
-              Demo checkout — no real payment is taken.
-            </p>
+            <p className="mt-4 text-center text-xs text-muted">Secure payment · Powered by Razorpay</p>
           </motion.div>
         </motion.div>
       )}

@@ -1,4 +1,4 @@
-import { Currency } from '@common/constants';
+import { Currency, PaymentProvider } from '@common/constants';
 import type { IPaymentGateway } from './payment.gateway';
 import { RazorpayGateway } from './razorpay.gateway';
 import { StripeGateway } from './stripe.gateway';
@@ -11,4 +11,14 @@ export function getPaymentGateway(currency: Currency): IPaymentGateway {
   return currency === Currency.INR ? razorpay : stripe;
 }
 
-export type { IPaymentGateway, CreateOrderInput, CreateOrderResult } from './payment.gateway';
+/** Selects a gateway by provider name — used when verifying a completed payment. */
+export function getPaymentGatewayByProvider(provider: PaymentProvider): IPaymentGateway {
+  return provider === PaymentProvider.RAZORPAY ? razorpay : stripe;
+}
+
+export type {
+  IPaymentGateway,
+  CreateOrderInput,
+  CreateOrderResult,
+  VerifyPaymentInput,
+} from './payment.gateway';

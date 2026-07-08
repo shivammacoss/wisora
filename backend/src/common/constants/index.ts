@@ -27,7 +27,11 @@ export enum PaymentStatus {
   REFUNDED = 'refunded',
 }
 
-/** Price per unlockable chapter, in the smallest unit of each currency. */
+/**
+ * Price per unlockable chapter, in MAJOR units (₹1 / $1 / €1) — matches the
+ * paywall display. Convert to a gateway's smallest unit (paise/cents) at the
+ * point of charge, e.g. `CHAPTER_PRICE[currency] * 100`.
+ */
 export const CHAPTER_PRICE: Record<Currency, number> = {
   [Currency.INR]: 1,
   [Currency.USD]: 1,
