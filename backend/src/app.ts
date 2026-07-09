@@ -11,6 +11,10 @@ import { errorHandler, notFound } from '@common/middlewares';
 export function createApp(): Application {
   const app = express();
 
+  // Behind a reverse proxy (Nginx). Trust the first proxy hop so req.ip and
+  // rate-limiting use the real client IP (fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR).
+  app.set('trust proxy', 1);
+
   loadExpress(app);
 
   app.use(env.API_PREFIX, apiRouter);
