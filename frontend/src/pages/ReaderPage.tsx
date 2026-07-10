@@ -78,25 +78,27 @@ export default function ReaderPage(): JSX.Element {
           <div className="mx-auto mt-6 h-px w-16 bg-gold/40" />
         </header>
 
-        {/* placeholder body — replace with real chapter summary content */}
+        {/* chapter body */}
         <article className="mt-10 space-y-5 text-lg leading-[1.85] text-body">
-          <p className="first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-serif first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-gold-deep">
-            This is a placeholder for the chapter summary. The real reader will render Wisora&apos;s
-            distilled, 5–10 minute summary of <span className="italic">{chapter.title}</span> here —
-            in a calm, distraction-free layout with sepia and dark themes.
-          </p>
-          <p>
-            Until the content pipeline is wired up, this stands in for the reading experience. Your
-            progress for this chapter has been recorded.
-          </p>
-          <blockquote className="my-8 rounded-2xl border-l-4 border-gold bg-white px-6 py-5 font-serif text-xl italic text-ink/80 shadow-soft">
-            “When meditation is mastered, the mind is unwavering like the flame of a lamp in a
-            windless place.”
-          </blockquote>
-          <p>
-            Each chapter is meant to be read slowly, in a single calm sitting — a few minutes of
-            reflection rather than a race to the end.
-          </p>
+          {chapter.content && chapter.content.length > 0 ? (
+            chapter.content.map((para, i) => (
+              <p
+                key={i}
+                className={
+                  i === 0
+                    ? 'first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-serif first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-gold-deep'
+                    : undefined
+                }
+              >
+                {para}
+              </p>
+            ))
+          ) : (
+            <p className="first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-serif first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-gold-deep">
+              The distilled summary of <span className="italic">{chapter.title}</span> is being
+              prepared. Your progress for this chapter has been recorded.
+            </p>
+          )}
         </article>
 
         {/* prev / next */}

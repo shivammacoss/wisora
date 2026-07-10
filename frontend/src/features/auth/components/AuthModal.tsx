@@ -1,10 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import axios from 'axios';
-import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { Eye, EyeOff, X } from 'lucide-react';
 import { useAuthStore } from '@app/store';
-import { config } from '@config/index';
 import { Button } from '@features/landing/components/ui/Button';
 import { authApi } from '../api/auth.api';
 
@@ -105,24 +103,6 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
           ? await authApi.register({ name: name.trim(), email: email.trim(), password })
           : await authApi.login({ email: email.trim(), password });
 
-      setSession(result.user, result.tokens);
-      onSuccess();
-    } catch (err) {
-      setError(getErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleCredential = async (resp: CredentialResponse): Promise<void> => {
-    if (!resp.credential) {
-      setError('Google sign-in was cancelled.');
-      return;
-    }
-    setError(null);
-    setLoading(true);
-    try {
-      const result = await authApi.loginWithGoogle(resp.credential);
       setSession(result.user, result.tokens);
       onSuccess();
     } catch (err) {
@@ -305,30 +285,13 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
                   <span className="h-px flex-1 bg-line" />
                 </div>
 
-                <div className="space-y-3">
-                  {config.googleClientId ? (
-                    <div className="flex justify-center">
-                      <GoogleLogin
-                        onSuccess={handleGoogleCredential}
-                        onError={() => setError('Google sign-in failed. Please try again.')}
-                        text={mode === 'signup' ? 'signup_with' : 'signin_with'}
-                        shape="pill"
-                        width="320"
-                      />
-                    </div>
-                  ) : (
-                    <p className="rounded-xl border border-dashed border-line px-4 py-3 text-center text-xs text-muted">
-                      Google sign-in not configured — set <code>VITE_GOOGLE_CLIENT_ID</code>.
-                    </p>
-                  )}
-                  <button
-                    type="button"
-                    onClick={handleGuest}
-                    className="w-full rounded-full py-2 text-sm font-medium text-muted transition-colors hover:text-ink"
-                  >
-                    Continue as guest
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleGuest}
+                  className="w-full rounded-full border border-line py-2.5 text-sm font-medium text-muted transition-colors hover:bg-cream hover:text-ink"
+                >
+                  Continue as guest
+                </button>
               </>
             )}
           </motion.div>

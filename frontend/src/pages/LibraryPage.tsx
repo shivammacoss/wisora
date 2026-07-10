@@ -1,38 +1,50 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, Image as ImageIcon, Plus, Search, TrendingUp } from 'lucide-react';
+import { ArrowRight, ChevronDown, Image as ImageIcon, Search, Share2, TrendingUp } from 'lucide-react';
 import { getBooks, type Book } from '@features/books';
-import { useAuthStore, useLibraryStore, readCountFor } from '@app/store';
 import { UserMenu } from '@shared/components/ui/UserMenu';
 import { ROUTES } from '@shared/constants';
-import libraryBanner from '@assets/images/library_banner.png';
+import libraryBanner from '@assets/images/banner1.png';
 
-/** Signed-in dashboard: topbar + banner + book strip + popular reads. */
+/** Signed-in dashboard: topbar + banner + book cards + popular reads. */
 export default function LibraryPage(): JSX.Element {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
-  const read = useLibraryStore((s) => s.read);
   const allBooks = getBooks();
 
   const [query, setQuery] = useState('');
-  const firstName = user?.name?.split(' ')[0] ?? 'reader';
+  const [category, setCategory] = useState('All');
+
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(allBooks.map((b) => b.tradition)))],
+    [allBooks],
+  );
 
   const books = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return allBooks;
-    return allBooks.filter(
-      (b) => b.title.toLowerCase().includes(q) || b.tradition.toLowerCase().includes(q),
-    );
-  }, [allBooks, query]);
+    return allBooks.filter((b) => {
+      const matchesQuery =
+        !q || b.title.toLowerCase().includes(q) || b.tradition.toLowerCase().includes(q);
+      const matchesCategory = category === 'All' || b.tradition === category;
+      return matchesQuery && matchesCategory;
+    });
+  }, [allBooks, query, category]);
 
   const openBook = (slug: string): void => navigate(ROUTES.bookDetail(slug));
   const popular = allBooks.slice(0, 3);
 
+  const shareBook = (book: Book): void => {
+    const url = `${window.location.origin}${ROUTES.bookDetail(book.slug)}`;
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      void navigator.share({ title: book.title, url }).catch(() => {});
+    } else {
+      void navigator.clipboard?.writeText(url).catch(() => {});
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#eceef4]">
       {/* topbar */}
-      <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-black/5 bg-white px-5 py-3.5">
+      <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-black/5 bg-white/90 px-5 py-3.5 backdrop-blur">
         <div className="relative max-w-md flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
@@ -47,60 +59,75 @@ export default function LibraryPage(): JSX.Element {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-6 p-5 lg:p-7">
+      <main className="mx-auto max-w-7xl space-y-7 p-5 lg:p-7">
         {/* ── Featured banner ── */}
-        <section aria-label="Featured banner" className="overflow-hidden rounded-3xl shadow-sm">
+        <section aria-label="Featured banner" className="relative overflow-hidden rounded-3xl shadow-sm">
           <img
             src={libraryBanner}
             alt="Featured banner"
             className="block h-auto w-full object-cover"
           />
+          {/* reading quote — sits in the open space on the left */}
+          <blockquote className="pointer-events-none absolute inset-y-0 left-0 flex w-[46%] flex-col justify-center px-5 sm:px-8 md:px-10">
+            <p className="font-serif text-base font-medium italic leading-snug text-ink/80 sm:text-xl md:text-2xl">
+              “Wisdom begins in wonder.”
+            </p>
+            <footer className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-ink/50 sm:mt-2 sm:text-xs">
+              — Socrates
+            </footer>
+          </blockquote>
         </section>
 
-        {/* ── Your books strip ── */}
-        <section className="rounded-3xl border border-black/5 bg-white p-5 shadow-sm sm:p-6">
-          <div>
-            <h2 className="font-serif text-xl font-bold text-ink">Your books</h2>
-            <p className="text-sm text-muted">
-              Welcome back, {firstName} — pick up where you left off.
-            </p>
+        {/* ── My Books ── */}
+        <section className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm sm:p-7">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="font-serif text-2xl font-bold text-ink">My Books</h2>
+
+            {/* category filter */}
+            <div className="relative shrink-0">
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                aria-label="Filter by category"
+                className="cursor-pointer appearance-none rounded-full border border-hairline bg-white py-2 pl-4 pr-10 text-sm font-medium text-ink shadow-sm transition-colors hover:border-gold/50 focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
+              >
+                {categories.map((c) => (
+                  <option key={c} value={c}>
+                    {c === 'All' ? 'All Categories' : c}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
-            {books.map((book) => (
-              <BookTile
-                key={book.slug}
-                book={book}
-                onOpen={() => openBook(book.slug)}
-                read={readCountFor(read, book.slug)}
-              />
-            ))}
-
-            {/* explore-more tile */}
-            <button
-              type="button"
-              onClick={() => navigate(ROUTES.library)}
-              className="flex min-h-[150px] flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-hairline text-muted transition-colors hover:border-gold/50 hover:text-gold-deep"
-            >
-              <Plus className="h-6 w-6" />
-              <span className="text-xs font-semibold">Explore more</span>
-            </button>
-          </div>
+          {books.length === 0 ? (
+            <p className="mt-8 text-center text-sm text-muted">No books match your search.</p>
+          ) : (
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              {books.map((book) => (
+                <MyBookCard
+                  key={book.slug}
+                  book={book}
+                  onRead={() => openBook(book.slug)}
+                  onShare={() => shareBook(book)}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ── Popular reads ── */}
-        <section className="overflow-hidden rounded-3xl border border-black/5 bg-gradient-to-br from-white via-white to-cream/50 p-6 shadow-sm sm:p-8">
+        <section className="overflow-hidden rounded-3xl border border-black/5 bg-gradient-to-br from-white via-white to-cream/40 p-6 shadow-sm sm:p-8">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-ink">
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-gold/15">
-                  <TrendingUp className="h-4 w-4 text-gold-deep" />
+              <h2 className="flex items-center gap-2.5 font-serif text-2xl font-bold text-ink">
+                <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5">
+                  <TrendingUp className="h-5 w-5 text-gold-deep" />
                 </span>
                 Popular reads
               </h2>
-              <p className="mt-1 text-sm text-muted">
-                Most-read scriptures across the Wisora community.
-              </p>
+              <p className="mt-1 text-sm text-muted">Most-read scriptures across the Wisora community.</p>
             </div>
             <button
               type="button"
@@ -111,9 +138,15 @@ export default function LibraryPage(): JSX.Element {
             </button>
           </div>
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
             {popular.map((b, i) => (
-              <PopularCard key={b.slug} book={b} rank={i + 1} onClick={() => openBook(b.slug)} />
+              <MyBookCard
+                key={b.slug}
+                book={b}
+                rank={i + 1}
+                onRead={() => openBook(b.slug)}
+                onShare={() => shareBook(b)}
+              />
             ))}
           </div>
         </section>
@@ -122,95 +155,60 @@ export default function LibraryPage(): JSX.Element {
   );
 }
 
-/* ───────── small building blocks ───────── */
+/* ───────── cards ───────── */
 
-function BookTile({
+function MyBookCard({
   book,
-  onOpen,
-  read,
-}: {
-  book: Book;
-  onOpen: () => void;
-  read: number;
-}): JSX.Element {
-  const total = book.chapters.length;
-  const pct = total ? Math.round((read / total) * 100) : 0;
-  return (
-    <motion.button
-      type="button"
-      onClick={onOpen}
-      whileHover={{ y: -4 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className="group text-left"
-    >
-      {book.image ? (
-        <img
-          src={book.image}
-          alt={`${book.title} cover`}
-          className="h-44 w-full rounded-2xl object-cover shadow-sm"
-        />
-      ) : (
-        // Empty cover placeholder — set `image` on the book in books.data.ts to fill it.
-        <div className="flex h-44 w-full flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-hairline bg-cream/40 text-muted/60">
-          <ImageIcon className="h-7 w-7" strokeWidth={1.5} />
-          <span className="text-[11px] font-medium">Add cover</span>
-        </div>
-      )}
-      <p className="mt-2 truncate text-sm font-semibold text-ink group-hover:text-gold-deep">
-        {book.title}
-      </p>
-      <p className="truncate text-xs text-muted">{book.tradition}</p>
-      <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-hairline">
-        <div className="h-full rounded-full bg-gold" style={{ width: `${pct}%` }} />
-      </div>
-    </motion.button>
-  );
-}
-
-function PopularCard({
-  book,
+  onRead,
+  onShare,
   rank,
-  onClick,
 }: {
   book: Book;
-  rank: number;
-  onClick: () => void;
+  onRead: () => void;
+  onShare: () => void;
+  rank?: number;
 }): JSX.Element {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex items-center gap-4 rounded-2xl border border-black/5 bg-white p-4 text-left shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
-    >
-      <span className="relative shrink-0">
+    <article className="flex gap-4 rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md">
+      {/* cover — empty space, ready for a real cover image */}
+      <div className="relative aspect-[3/4] w-24 shrink-0 overflow-hidden rounded-xl border border-hairline bg-cream/40 sm:w-28">
         {book.image ? (
-          <img
-            src={book.image}
-            alt={`${book.title} cover`}
-            className="h-20 w-16 rounded-xl object-cover shadow-sm"
-          />
+          <img src={book.image} alt={`${book.title} cover`} className="h-full w-full object-cover" />
         ) : (
-          // Empty cover placeholder — set `image` on the book in books.data.ts to fill it.
-          <div className="flex h-20 w-16 items-center justify-center rounded-xl border-2 border-dashed border-hairline bg-cream/40 text-muted/60">
-            <ImageIcon className="h-5 w-5" strokeWidth={1.5} />
+          <div className="flex h-full w-full items-center justify-center text-muted/40">
+            <ImageIcon className="h-7 w-7" />
           </div>
         )}
-        <span className="absolute -left-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-gold text-xs font-bold text-white shadow">
-          {rank}
-        </span>
-      </span>
-      <div className="min-w-0 flex-1">
-        <span className="inline-flex items-center gap-1 rounded-full bg-gold/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gold-deep">
-          <TrendingUp className="h-3 w-3" /> Trending
-        </span>
-        <h3 className="mt-1.5 truncate font-serif text-base font-bold text-ink group-hover:text-gold-deep">
-          {book.title}
-        </h3>
-        <p className="truncate text-xs text-muted">
-          {book.tradition} · {book.chapters.length} chapters
-        </p>
+        {rank !== undefined && (
+          <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-gold to-gold-deep text-[11px] font-extrabold text-white shadow ring-2 ring-white">
+            {rank}
+          </span>
+        )}
       </div>
-      <ArrowRight className="h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-1" />
-    </button>
+
+      {/* content */}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <h3 className="font-serif text-lg font-bold leading-snug text-ink">{book.title}</h3>
+        <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted">{book.description}</p>
+
+        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+          <button
+            type="button"
+            onClick={onRead}
+            className="rounded-full bg-gold/10 px-4 py-1.5 text-sm font-semibold text-gold-deep transition-colors hover:bg-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          >
+            Read More
+          </button>
+          <button
+            type="button"
+            onClick={onShare}
+            aria-label={`Share ${book.title}`}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-cream hover:text-gold-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          >
+            <Share2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </article>
   );
 }

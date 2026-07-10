@@ -2,15 +2,14 @@ import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, Check, Loader2, Lock, X } from 'lucide-react';
 import { Button } from '@features/landing/components/ui/Button';
-import { formatCurrency } from '@shared/utils/formatCurrency';
-import type { Currency } from '@shared/types';
 import type { Book, Chapter } from '@features/books';
 
 interface PaywallModalProps {
   open: boolean;
   book: Book;
   chapter: Chapter | null;
-  currency: Currency;
+  /** Symbol of the selected display currency (₹, $, €, …). */
+  currencySymbol: string;
   /** Payment in flight (creating order / opening checkout / verifying). */
   processing?: boolean;
   /** Error from the last checkout attempt, if any. */
@@ -25,7 +24,7 @@ export function PaywallModal({
   open,
   book,
   chapter,
-  currency,
+  currencySymbol,
   processing = false,
   error = null,
   onClose,
@@ -41,7 +40,7 @@ export function PaywallModal({
     return () => document.removeEventListener('keydown', onKey);
   }, [open, processing, onClose]);
 
-  const price = formatCurrency(1, currency);
+  const price = `${currencySymbol}1`;
 
   return (
     <AnimatePresence>

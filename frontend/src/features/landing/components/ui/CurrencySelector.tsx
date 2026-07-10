@@ -1,23 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Globe } from 'lucide-react';
 import { cn } from '@shared/utils/cn';
+import { CURRENCIES, type CurrencyOption } from '@shared/constants/currencies';
 
-export interface CurrencyOption {
-  code: string;
-  symbol: string;
-  label: string;
-}
-
-/** Supported display currencies for the pricing teaser. */
-export const CURRENCIES: CurrencyOption[] = [
-  { code: 'INR', symbol: '₹', label: 'Indian Rupee' },
-  { code: 'USD', symbol: '$', label: 'US Dollar' },
-  { code: 'EUR', symbol: '€', label: 'Euro' },
-  { code: 'GBP', symbol: '£', label: 'British Pound' },
-  { code: 'JPY', symbol: '¥', label: 'Japanese Yen' },
-  { code: 'AUD', symbol: 'A$', label: 'Australian Dollar' },
-  { code: 'CAD', symbol: 'C$', label: 'Canadian Dollar' },
-];
+// Re-exported so existing importers keep working.
+export { CURRENCIES };
+export type { CurrencyOption };
 
 interface CurrencySelectorProps {
   value: CurrencyOption;

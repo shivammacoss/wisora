@@ -5,7 +5,8 @@ import { ArrowLeft } from 'lucide-react';
 import { getBookBySlug, type Chapter } from '@features/books';
 import { ChapterRow, PaywallModal } from '@features/book';
 import { useChapterCheckout } from '@features/payments';
-import { chapterUnlocked, useAuthStore, useLibraryStore } from '@app/store';
+import { CurrencySelector } from '@features/landing/components/ui/CurrencySelector';
+import { chapterUnlocked, useCurrencyStore, useLibraryStore, toPaymentCurrency } from '@app/store';
 import { AppHeader } from '@shared/components/ui/AppHeader';
 import { BookCover } from '@shared/components/ui/BookCover';
 import { ROUTES } from '@shared/constants';
@@ -16,7 +17,8 @@ export default function BookDetailPage(): JSX.Element {
   const navigate = useNavigate();
   const book = getBookBySlug(bookId);
 
-  const currency = useAuthStore((s) => s.user?.currency ?? 'INR');
+  const currency = useCurrencyStore((s) => s.currency);
+  const setCurrency = useCurrencyStore((s) => s.setCurrency);
   const unlocked = useLibraryStore((s) => s.unlocked);
   const read = useLibraryStore((s) => s.read);
   const unlockChapter = useLibraryStore((s) => s.unlockChapter);
@@ -55,8 +57,8 @@ export default function BookDetailPage(): JSX.Element {
     <div className="min-h-screen bg-cream">
       <AppHeader />
 
-      {/* hero */}
-      <div className={`bg-gradient-to-br ${book.accent}`}>
+      {/* hero — unified golden theme banner across all books */}
+      <div className="bg-gradient-to-br from-amber-200 via-gold to-gold-deep">
         <div className="mx-auto max-w-4xl px-6 py-12 md:py-16">
           <button
             type="button"
@@ -93,9 +95,12 @@ export default function BookDetailPage(): JSX.Element {
 
       {/* chapters */}
       <main className="mx-auto max-w-3xl px-6 py-12 md:py-16">
-        <h2 className="font-serif text-2xl font-bold text-ink">
-          Chapters <span className="text-base font-normal text-muted">({book.chapters.length})</span>
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 className="font-serif text-2xl font-bold text-ink">
+            Chapters <span className="text-base font-normal text-muted">({book.chapters.length})</span>
+          </h2>
+          <CurrencySelector value={currency} onChange={setCurrency} />
+        </div>
 
         <ul className="mt-6 flex flex-col gap-3">
           {book.chapters.map((chapter) => {
@@ -107,7 +112,7 @@ export default function BookDetailPage(): JSX.Element {
                 chapter={chapter}
                 unlocked={isUnlocked}
                 read={Boolean(read[`${book.slug}:${chapter.order}`])}
-                currency={currency}
+                currencySymbol={currency.symbol}
                 onRead={() => openReader(chapter)}
                 onUnlock={() => setPaywallChapter(chapter)}
               />
@@ -120,14 +125,16 @@ export default function BookDetailPage(): JSX.Element {
         open={paywallChapter !== null}
         book={book}
         chapter={paywallChapter}
-        currency={currency}
+        currencySymbol={currency.symbol}
         processing={checkout.processing}
         error={checkout.error}
         onClose={() => {
           checkout.clearError();
           setPaywallChapter(null);
         }}
-        onPay={() => paywallChapter && checkout.start(book, paywallChapter, currency)}
+        onPay={() =>
+          paywallChapter && checkout.start(book, paywallChapter, toPaymentCurrency(currency.code))
+        }
       />
     </div>
   );

@@ -64,7 +64,6 @@ interface AuthState {
   isGuest: boolean;
   setSession: (user: AuthUser, tokens: AuthTokens) => void;
   continueAsGuest: () => void;
-  loginWithGoogle: () => void;
   loginWithMagicLink: (email: string) => void;
   signUp: (name: string, email: string, password: string) => AuthResultStatus;
   loginWithPassword: (email: string, password: string) => AuthResultStatus;
@@ -90,20 +89,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   continueAsGuest: () => {
     // Guest mode: a temporary session — browse without an account, not persisted.
     set({ user: GUEST_USER, isAuthenticated: true, isGuest: true });
-  },
-
-  loginWithGoogle: () => {
-    // Mock Google sign-in — persisted so the session survives a refresh.
-    const user: AuthUser = {
-      id: 'google-user',
-      name: 'Wisora Reader',
-      email: 'reader@gmail.com',
-      role: 'user',
-      currency: 'INR',
-    };
-    tokenStorage.set(MOCK_TOKENS);
-    persistUser(user);
-    set({ user, isAuthenticated: true, isGuest: false });
   },
 
   loginWithMagicLink: (email) => {

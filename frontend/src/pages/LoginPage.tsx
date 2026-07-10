@@ -25,7 +25,6 @@ import {
 export default function LoginPage(): JSX.Element {
   const navigate = useNavigate();
   const continueAsGuest = useAuthStore((s) => s.continueAsGuest);
-  const loginWithGoogle = useAuthStore((s) => s.loginWithGoogle);
   const loginWithMagicLink = useAuthStore((s) => s.loginWithMagicLink);
 
   // Sign-up / login popup.
@@ -38,11 +37,6 @@ export default function LoginPage(): JSX.Element {
 
   const enterAsGuest = (): void => {
     continueAsGuest();
-    navigate(ROUTES.library);
-  };
-
-  const enterWithGoogle = (): void => {
-    loginWithGoogle();
     navigate(ROUTES.library);
   };
 
@@ -79,11 +73,7 @@ export default function LoginPage(): JSX.Element {
         <BookShowcase onOpenBook={openAuth} />
         <FeatureRows />
         <PricingCard onStartFree={openAuth} />
-        <FinalCTA
-          onContinueGuest={enterAsGuest}
-          onContinueGoogle={enterWithGoogle}
-          onMagicLink={enterWithMagicLink}
-        />
+        <FinalCTA onContinueGuest={enterAsGuest} onMagicLink={enterWithMagicLink} />
       </main>
 
       {/* Closing tagline — the page ends here (no footer). */}

@@ -4,6 +4,8 @@ export interface Chapter {
   readingTimeMins: number;
   /** Chapter 1 is free; the rest cost 1 unit of local currency for lifetime access. */
   isFree: boolean;
+  /** Chapter summary body, as an array of paragraphs. Optional until authored. */
+  content?: string[];
 }
 
 export interface Book {

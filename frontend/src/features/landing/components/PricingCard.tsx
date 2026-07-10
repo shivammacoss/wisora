@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './ui/Button';
-import { CURRENCIES, CurrencySelector, type CurrencyOption } from './ui/CurrencySelector';
+import { CurrencySelector } from './ui/CurrencySelector';
+import { useCurrencyStore } from '@app/store';
 import { fadeUp } from '../lib/motion';
 
 interface PricingCardProps {
@@ -10,7 +10,8 @@ interface PricingCardProps {
 
 /** "One Coin, One Chapter" — centred pricing teaser with currency selector. */
 export function PricingCard({ onStartFree }: PricingCardProps): JSX.Element {
-  const [currency, setCurrency] = useState<CurrencyOption>(CURRENCIES[0]);
+  const currency = useCurrencyStore((s) => s.currency);
+  const setCurrency = useCurrencyStore((s) => s.setCurrency);
 
   return (
     <section id="pricing" className="bg-cream py-24 md:py-32">

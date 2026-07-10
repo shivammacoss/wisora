@@ -1,7 +1,5 @@
 import { BookOpen, Check, Lock } from 'lucide-react';
 import { Button } from '@features/landing/components/ui/Button';
-import { formatCurrency } from '@shared/utils/formatCurrency';
-import type { Currency } from '@shared/types';
 import type { Book, Chapter } from '@features/books';
 
 interface ChapterRowProps {
@@ -11,7 +9,8 @@ interface ChapterRowProps {
   unlocked: boolean;
   /** Already opened in the reader? */
   read: boolean;
-  currency: Currency;
+  /** Symbol of the selected display currency (₹, $, €, …). */
+  currencySymbol: string;
   /** Open the reader for an accessible chapter. */
   onRead: () => void;
   /** Request to unlock a locked chapter (opens the paywall). */
@@ -23,7 +22,7 @@ export function ChapterRow({
   chapter,
   unlocked,
   read,
-  currency,
+  currencySymbol,
   onRead,
   onUnlock,
 }: ChapterRowProps): JSX.Element {
@@ -66,7 +65,7 @@ export function ChapterRow({
           className="inline-flex items-center gap-2 rounded-full border border-hairline bg-cream-surface px-4 py-2 text-sm font-semibold text-ink transition-colors duration-300 hover:border-gold/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
         >
           <Lock className="h-4 w-4 text-muted" />
-          {formatCurrency(1, currency)}
+          {currencySymbol}1
         </button>
       )}
     </li>
