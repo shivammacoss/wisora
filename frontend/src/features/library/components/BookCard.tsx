@@ -22,7 +22,7 @@ export function BookCard({ book }: { book: Book }): JSX.Element {
       onClick={() => navigate(ROUTES.bookDetail(book.slug))}
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-hairline bg-white text-left shadow-soft transition-shadow duration-300 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+      className="group flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface text-left shadow-soft transition-shadow duration-300 hover:shadow-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
     >
       {/* cover */}
       <div className="relative">
@@ -32,7 +32,7 @@ export function BookCard({ book }: { book: Book }): JSX.Element {
             <Check className="h-3 w-3" /> Completed
           </span>
         ) : (
-          <span className="absolute left-3 top-3 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-semibold text-ink backdrop-blur">
+          <span className="absolute left-3 top-3 rounded-full bg-surface/85 px-2.5 py-1 text-[11px] font-semibold text-ink backdrop-blur">
             Chapter 1 free
           </span>
         )}

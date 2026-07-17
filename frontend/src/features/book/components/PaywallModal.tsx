@@ -56,7 +56,7 @@ export function PaywallModal({
             type="button"
             aria-label="Close"
             onClick={() => !processing && onClose()}
-            className="absolute inset-0 bg-ink/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           />
 
           {/* dialog */}
@@ -75,12 +75,12 @@ export function PaywallModal({
               onClick={onClose}
               aria-label="Close"
               disabled={processing}
-              className="absolute right-4 top-4 rounded-full p-1.5 text-muted transition-colors hover:bg-white hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:opacity-40"
+              className="absolute right-4 top-4 rounded-full p-1.5 text-muted transition-colors hover:bg-surface hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:opacity-40"
             >
               <X className="h-5 w-5" />
             </button>
 
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-soft">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface shadow-soft">
               <Lock className="h-6 w-6 text-gold" />
             </div>
 

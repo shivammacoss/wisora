@@ -19,6 +19,15 @@
     />
 
     <title>Wisora — Sacred Wisdom, Daily</title>
+
+    <!-- Apply saved theme before paint to avoid a flash of the wrong mode. -->
+    <script>
+      try {
+        if (localStorage.getItem('wisora.theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

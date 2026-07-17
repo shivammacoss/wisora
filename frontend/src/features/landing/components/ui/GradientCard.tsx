@@ -32,12 +32,12 @@ export function GradientCard({
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
       className={cn(
         'group flex flex-col rounded-3xl bg-gradient-to-br p-8 shadow-soft',
-        'transition-shadow duration-300 hover:shadow-lift',
+        'transition-shadow duration-300 hover:shadow-lift dark:border dark:border-hairline',
         gradient,
         className,
       )}
     >
-      <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-white/70 text-ink backdrop-blur">
+      <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-surface/70 text-ink backdrop-blur">
         {icon}
       </div>
       <h3 className="text-xl font-bold tracking-tight text-ink">{title}</h3>

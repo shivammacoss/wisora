@@ -64,7 +64,7 @@ export default function ProfilePage(): JSX.Element {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 overflow-hidden rounded-3xl border border-hairline bg-white shadow-soft"
+          className="mt-6 overflow-hidden rounded-3xl border border-hairline bg-surface shadow-soft"
         >
           {/* identity header */}
           <div className="flex items-center gap-5 bg-cream-surface px-6 py-8 sm:px-8">

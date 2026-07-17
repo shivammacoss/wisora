@@ -54,7 +54,7 @@ export function FinalCTA({ onContinueGuest, onMagicLink }: FinalCTAProps): JSX.E
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="flex-1 rounded-full border border-hairline bg-white px-5 py-3 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold"
+            className="flex-1 rounded-full border border-hairline bg-surface px-5 py-3 text-sm text-ink placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-gold"
           />
           <Button type="submit" variant="dark" size="lg" className="shrink-0">
             Send magic link

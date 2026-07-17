@@ -53,7 +53,7 @@ export function BookShowcase({ onOpenBook }: BookShowcaseProps): JSX.Element {
             <motion.article
               key={book.title}
               variants={fadeUp}
-              className="group flex flex-col rounded-2xl border border-hairline bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"
+              className="group flex flex-col rounded-2xl border border-hairline bg-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-widest text-muted">
@@ -62,7 +62,7 @@ export function BookShowcase({ onOpenBook }: BookShowcaseProps): JSX.Element {
                 <button
                   type="button"
                   onClick={onOpenBook}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-medium text-white transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
                 >
                   <Play className="h-3 w-3 fill-white" /> Open book
                 </button>

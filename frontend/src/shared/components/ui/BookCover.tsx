@@ -44,7 +44,7 @@ export function BookCover({ book, className, symbolClassName }: BookCoverProps):
       <span
         aria-hidden
         className={cn(
-          'relative flex items-center justify-center rounded-full bg-white/25 shadow-soft ring-1 ring-white/40 backdrop-blur-sm',
+          'relative flex items-center justify-center rounded-full bg-surface/25 shadow-soft ring-1 ring-white/40 backdrop-blur-sm',
           symbolClassName,
         )}
       >

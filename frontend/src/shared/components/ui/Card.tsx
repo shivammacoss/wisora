@@ -6,7 +6,7 @@ export function Card({ className, ...props }: HTMLAttributes<HTMLDivElement>): J
   return (
     <div
       className={cn(
-        'overflow-hidden rounded-2xl border border-sacred-100 bg-white shadow-sm transition',
+        'overflow-hidden rounded-2xl border border-sacred-100 bg-surface shadow-sm transition',
         props.onClick && 'cursor-pointer hover:-translate-y-1 hover:shadow-lg',
         className,
       )}

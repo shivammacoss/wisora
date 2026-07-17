@@ -23,13 +23,13 @@ export function HowItWorks(): JSX.Element {
           <div className="pointer-events-none absolute -inset-8 -z-10 rounded-[3rem] bg-gradient-to-br from-amber-100/70 via-cream to-rose-100/60 blur-2xl" />
 
           {/* Browser frame */}
-          <div className="overflow-hidden rounded-3xl border border-hairline bg-white shadow-lift">
+          <div className="overflow-hidden rounded-3xl border border-hairline bg-surface shadow-lift">
             {/* top bar */}
             <div className="flex items-center gap-2 border-b border-hairline bg-cream-surface px-5 py-3">
               <span className="h-3 w-3 rounded-full bg-rose-300" />
               <span className="h-3 w-3 rounded-full bg-amber-300" />
               <span className="h-3 w-3 rounded-full bg-emerald-300" />
-              <span className="ml-4 hidden rounded-full bg-white px-4 py-1 text-xs text-muted sm:block">
+              <span className="ml-4 hidden rounded-full bg-surface px-4 py-1 text-xs text-muted sm:block">
                 wisora.app/read/bhagavad-gita/4
               </span>
             </div>

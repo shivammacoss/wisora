@@ -10,19 +10,19 @@ const PRIMARY = [
     title: 'Ancient Texts',
     description:
       'Read the Gita, Bible, Quran, Tao Te Ching, Dhammapada, and more — all in one place.',
-    gradient: 'from-amber-200 to-orange-300',
+    gradient: 'from-amber-200 to-orange-300 dark:from-[#1E1B15] dark:to-[#1E1B15]',
   },
   {
     icon: <Heart className="h-6 w-6" />,
     title: '5–10 Minute Chapters',
     description: 'Bite-sized summaries designed for peace and understanding, not overload.',
-    gradient: 'from-rose-200 to-pink-300',
+    gradient: 'from-rose-200 to-pink-300 dark:from-[#1E1B15] dark:to-[#1E1B15]',
   },
   {
     icon: <TrendingUp className="h-6 w-6" />,
     title: 'Track Your Journey',
     description: 'Build a daily reading habit. Bookmarks, progress, and streaks — all synced.',
-    gradient: 'from-emerald-200 to-teal-300',
+    gradient: 'from-emerald-200 to-teal-300 dark:from-[#1E1B15] dark:to-[#1E1B15]',
   },
 ];
 
@@ -71,7 +71,7 @@ export function FeatureGrid(): JSX.Element {
               variants={fadeUp}
               className="flex items-start gap-4 rounded-3xl border border-hairline bg-cream-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-soft"
             >
-              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white shadow-soft">
+              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-surface shadow-soft">
                 {card.icon}
               </span>
               <div>

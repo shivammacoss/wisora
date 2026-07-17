@@ -2,6 +2,7 @@ import { type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '@features/landing';
 import { UserMenu } from './UserMenu';
+import { ThemeToggle } from './ThemeToggle';
 import { ROUTES } from '@shared/constants';
 
 interface AppHeaderProps {
@@ -23,7 +24,10 @@ export function AppHeader({ right }: AppHeaderProps): JSX.Element {
         >
           <Logo size={48} />
         </button>
-        <div className="flex items-center gap-3">{right ?? <UserMenu />}</div>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          {right ?? <UserMenu />}
+        </div>
       </div>
     </header>
   );

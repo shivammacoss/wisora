@@ -26,18 +26,21 @@ export default {
           900: '#4a3815',
         },
         // Landing-page design tokens (warm, book-app feel).
+        // Gold stays fixed in both themes. The rest are CSS variables that
+        // flip between light and dark (defined in global.css → :root / .dark).
         gold: {
           DEFAULT: '#D4A017', // primary gold
           deep: '#B8860B', // deep gold (hover)
         },
         cream: {
-          DEFAULT: '#FAFAF7', // page background
-          surface: '#FBF6EC', // soft cream surface
+          DEFAULT: 'rgb(var(--c-cream) / <alpha-value>)', // page background
+          surface: 'rgb(var(--c-cream-surface) / <alpha-value>)', // soft surface
         },
-        ink: '#1A1A1A', // heading text / dark CTA
-        body: '#4B5563', // body text
-        muted: '#9CA3AF', // muted text
-        hairline: '#E5E7EB', // light border
+        surface: 'rgb(var(--c-surface) / <alpha-value>)', // card / panel surface
+        ink: 'rgb(var(--c-ink) / <alpha-value>)', // heading / strong text
+        body: 'rgb(var(--c-body) / <alpha-value>)', // body text
+        muted: 'rgb(var(--c-muted) / <alpha-value>)', // muted text
+        hairline: 'rgb(var(--c-hairline) / <alpha-value>)', // borders
       },
       fontFamily: {
         // Headings: warm serif. Body & UI: Inter.

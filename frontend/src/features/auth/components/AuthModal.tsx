@@ -142,7 +142,7 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
           transition={{ duration: 0.2 }}
         >
           {/* backdrop */}
-          <div className="absolute inset-0 bg-ink/40 backdrop-blur-sm" onClick={onClose} aria-hidden />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} aria-hidden />
 
           {/* panel */}
           <motion.div
@@ -153,7 +153,7 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 w-full max-w-md rounded-2xl border border-hairline bg-white p-8 shadow-xl"
+            className="relative z-10 w-full max-w-md rounded-2xl border border-hairline bg-surface p-8 shadow-xl"
           >
             <button
               type="button"
@@ -176,7 +176,7 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
                     type="button"
                     onClick={() => switchMode(m)}
                     className={`rounded-lg py-2 transition-colors ${
-                      mode === m ? 'bg-white text-ink shadow-soft' : 'text-muted hover:text-ink'
+                      mode === m ? 'bg-surface text-ink shadow-soft' : 'text-muted hover:text-ink'
                     }`}
                   >
                     {m === 'signup' ? 'Sign Up' : 'Log In'}
@@ -193,7 +193,7 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Your name"
                   autoComplete="name"
-                  className="w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+                  className="w-full rounded-xl border border-hairline bg-surface px-4 py-3 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
                 />
               )}
 
@@ -203,7 +203,7 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 autoComplete="email"
-                className="w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+                className="w-full rounded-xl border border-hairline bg-surface px-4 py-3 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
               />
 
               {mode !== 'forgot' && (
@@ -214,7 +214,7 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Password (min 6 characters)"
                     autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                    className="w-full rounded-xl border border-line bg-white px-4 py-3 pr-11 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+                    className="w-full rounded-xl border border-hairline bg-surface px-4 py-3 pr-11 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
                   />
                   <button
                     type="button"
@@ -280,15 +280,15 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
               <>
                 {/* divider */}
                 <div className="my-5 flex items-center gap-3 text-xs text-muted">
-                  <span className="h-px flex-1 bg-line" />
+                  <span className="h-px flex-1 bg-hairline" />
                   OR
-                  <span className="h-px flex-1 bg-line" />
+                  <span className="h-px flex-1 bg-hairline" />
                 </div>
 
                 <button
                   type="button"
                   onClick={handleGuest}
-                  className="w-full rounded-full border border-line py-2.5 text-sm font-medium text-muted transition-colors hover:bg-cream hover:text-ink"
+                  className="w-full rounded-full border border-hairline py-2.5 text-sm font-medium text-muted transition-colors hover:bg-cream hover:text-ink"
                 >
                   Continue as guest
                 </button>

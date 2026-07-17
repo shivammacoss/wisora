@@ -44,7 +44,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps): JS
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'inline-flex items-center gap-2 rounded-full border border-hairline bg-white px-4 py-2 text-sm font-medium text-ink shadow-soft',
+          'inline-flex items-center gap-2 rounded-full border border-hairline bg-surface px-4 py-2 text-sm font-medium text-ink shadow-soft',
           'transition-colors duration-300 hover:border-gold/50',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream',
         )}
@@ -63,7 +63,7 @@ export function CurrencySelector({ value, onChange }: CurrencySelectorProps): JS
         <ul
           role="listbox"
           aria-label="Select currency"
-          className="absolute left-1/2 z-20 mt-2 w-56 -translate-x-1/2 overflow-hidden rounded-2xl border border-hairline bg-white p-1 shadow-lift"
+          className="absolute left-1/2 z-20 mt-2 w-56 -translate-x-1/2 overflow-hidden rounded-2xl border border-hairline bg-surface p-1 shadow-lift"
         >
           {CURRENCIES.map((c) => {
             const selected = c.code === value.code;

@@ -59,7 +59,7 @@ export function UserMenu(): JSX.Element {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-full border border-hairline bg-white py-1.5 pl-1.5 pr-3 shadow-soft transition-colors hover:border-ink/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        className="flex items-center gap-2 rounded-full border border-hairline bg-surface py-1.5 pl-1.5 pr-3 shadow-soft transition-colors hover:border-ink/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
       >
         <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-gold to-gold-deep text-sm font-semibold text-white">
           {initialsOf(name)}
@@ -80,7 +80,7 @@ export function UserMenu(): JSX.Element {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.98 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-hairline bg-white p-1.5 shadow-lift"
+            className="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-2xl border border-hairline bg-surface p-1.5 shadow-lift"
           >
             <div className="flex items-center gap-3 px-3 py-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-gold to-gold-deep text-base font-semibold text-white">

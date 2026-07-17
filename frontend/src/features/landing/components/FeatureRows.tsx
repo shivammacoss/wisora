@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { cn } from '@shared/utils/cn';
-import { CoinArt, OpenBookArt, ProgressArt } from './illustrations/RowArt';
 import { fadeUp } from '../lib/motion';
+import infoCard1 from '@assets/images/info_card1.png';
+import infoCard2 from '@assets/images/info_card2.png';
+import infoCard3 from '@assets/images/info_card3.png';
 
 interface Row {
   title: string;
@@ -16,21 +18,27 @@ const ROWS: Row[] = [
     title: 'Read with focus, not pressure',
     description:
       'One chapter at a time. No subscriptions, no nagging notifications. Just you and the wisdom of the ages.',
-    art: <OpenBookArt />,
+    art: (
+      <img src={infoCard1} alt="Read with focus illustration" className="w-full rounded-2xl" />
+    ),
     reverse: false,
   },
   {
     title: 'Pay only for what you read',
     description:
       '₹1 per chapter. Pay in your local currency. Lifetime access — unlock once, read forever.',
-    art: <CoinArt />,
+    art: (
+      <img src={infoCard2} alt="Pay per chapter illustration" className="w-full rounded-2xl" />
+    ),
     reverse: true,
   },
   {
     title: 'Track your spiritual journey',
     description:
       'Bookmarks, progress, streaks, and a private reading library that syncs across devices.',
-    art: <ProgressArt />,
+    art: (
+      <img src={infoCard3} alt="Track your journey illustration" className="w-full rounded-2xl" />
+    ),
     reverse: false,
   },
 ];

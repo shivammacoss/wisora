@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, ChevronDown, Image as ImageIcon, Search, Share2, TrendingUp } from 'lucide-react';
 import { getBooks, type Book } from '@features/books';
 import { UserMenu } from '@shared/components/ui/UserMenu';
+import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
 import { ROUTES } from '@shared/constants';
 import libraryBanner from '@assets/images/banner1.png';
 
@@ -42,19 +43,20 @@ export default function LibraryPage(): JSX.Element {
   };
 
   return (
-    <div className="min-h-screen bg-[#eceef4]">
+    <div className="min-h-screen bg-cream">
       {/* topbar */}
-      <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-black/5 bg-white/90 px-5 py-3.5 backdrop-blur">
+      <header className="sticky top-0 z-30 flex items-center gap-4 border-b border-hairline bg-surface/90 px-5 py-3.5 backdrop-blur">
         <div className="relative max-w-md flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for your next book…"
-            className="w-full rounded-xl border border-hairline bg-cream/40 py-2.5 pl-10 pr-4 text-sm text-ink placeholder:text-muted focus:border-gold focus:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
+            className="w-full rounded-xl border border-hairline bg-cream/40 py-2.5 pl-10 pr-4 text-sm text-ink placeholder:text-muted focus:border-gold focus:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
           />
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-3">
+          <ThemeToggle />
           <UserMenu />
         </div>
       </header>
@@ -79,7 +81,7 @@ export default function LibraryPage(): JSX.Element {
         </section>
 
         {/* ── My Books ── */}
-        <section className="rounded-3xl border border-black/5 bg-white p-6 shadow-sm sm:p-7">
+        <section className="rounded-3xl border border-hairline bg-surface p-6 shadow-sm sm:p-7">
           <div className="flex items-center justify-between gap-4">
             <h2 className="font-serif text-2xl font-bold text-ink">My Books</h2>
 
@@ -89,7 +91,7 @@ export default function LibraryPage(): JSX.Element {
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 aria-label="Filter by category"
-                className="cursor-pointer appearance-none rounded-full border border-hairline bg-white py-2 pl-4 pr-10 text-sm font-medium text-ink shadow-sm transition-colors hover:border-gold/50 focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
+                className="cursor-pointer appearance-none rounded-full border border-hairline bg-surface py-2 pl-4 pr-10 text-sm font-medium text-ink shadow-sm transition-colors hover:border-gold/50 focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
               >
                 {categories.map((c) => (
                   <option key={c} value={c}>
@@ -118,7 +120,7 @@ export default function LibraryPage(): JSX.Element {
         </section>
 
         {/* ── Popular reads ── */}
-        <section className="overflow-hidden rounded-3xl border border-black/5 bg-gradient-to-br from-white via-white to-cream/40 p-6 shadow-sm sm:p-8">
+        <section className="overflow-hidden rounded-3xl border border-hairline bg-gradient-to-br from-surface via-surface to-cream/40 p-6 shadow-sm sm:p-8">
           <div className="flex items-end justify-between gap-4">
             <div>
               <h2 className="flex items-center gap-2.5 font-serif text-2xl font-bold text-ink">
@@ -169,7 +171,7 @@ function MyBookCard({
   rank?: number;
 }): JSX.Element {
   return (
-    <article className="flex gap-4 rounded-2xl border border-black/5 bg-white p-4 shadow-sm transition-shadow duration-300 hover:shadow-md">
+    <article className="flex gap-4 rounded-2xl border border-hairline bg-surface p-4 shadow-sm transition-shadow duration-300 hover:shadow-md">
       {/* cover — empty space, ready for a real cover image */}
       <div className="relative aspect-[3/4] w-24 shrink-0 overflow-hidden rounded-xl border border-hairline bg-cream/40 sm:w-28">
         {book.image ? (

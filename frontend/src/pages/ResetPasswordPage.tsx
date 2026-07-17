@@ -61,7 +61,7 @@ export default function ResetPasswordPage(): JSX.Element {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-md rounded-2xl border border-hairline bg-white p-8 shadow-xl"
+        className="w-full max-w-md rounded-2xl border border-hairline bg-surface p-8 shadow-xl"
       >
         {!token ? (
           <div className="text-center">
@@ -97,7 +97,7 @@ export default function ResetPasswordPage(): JSX.Element {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="New password (min 8 characters)"
                   autoComplete="new-password"
-                  className="w-full rounded-xl border border-line bg-white px-4 py-3 pr-11 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+                  className="w-full rounded-xl border border-hairline bg-surface px-4 py-3 pr-11 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
                 />
                 <button
                   type="button"
@@ -116,7 +116,7 @@ export default function ResetPasswordPage(): JSX.Element {
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="Confirm new password"
                 autoComplete="new-password"
-                className="w-full rounded-xl border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+                className="w-full rounded-xl border border-hairline bg-surface px-4 py-3 text-base text-ink placeholder:text-muted focus:border-gold focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
               />
 
               {error && <p className="text-sm font-medium text-red-600">{error}</p>}

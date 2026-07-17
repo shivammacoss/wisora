@@ -27,7 +27,7 @@ export function ChapterRow({
   onUnlock,
 }: ChapterRowProps): JSX.Element {
   return (
-    <li className="flex items-center gap-4 rounded-2xl border border-hairline bg-white p-4 shadow-soft transition-shadow duration-300 hover:shadow-lift">
+    <li className="flex items-center gap-4 rounded-2xl border border-hairline bg-surface p-4 shadow-soft transition-shadow duration-300 hover:shadow-lift">
       {/* order / status badge */}
       <div
         className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full font-serif text-lg ${
