@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ChevronDown, Image as ImageIcon, Search, Share2, TrendingUp } from 'lucide-react';
+import { ArrowRight, Bird, BookOpen, ChevronDown, Flame, Flower2, Moon, Search, TrendingUp } from 'lucide-react';
 import { getBooks, type Book } from '@features/books';
 import { UserMenu } from '@shared/components/ui/UserMenu';
 import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
@@ -32,15 +32,6 @@ export default function LibraryPage(): JSX.Element {
 
   const openBook = (slug: string): void => navigate(ROUTES.bookDetail(slug));
   const popular = allBooks.slice(0, 3);
-
-  const shareBook = (book: Book): void => {
-    const url = `${window.location.origin}${ROUTES.bookDetail(book.slug)}`;
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      void navigator.share({ title: book.title, url }).catch(() => {});
-    } else {
-      void navigator.clipboard?.writeText(url).catch(() => {});
-    }
-  };
 
   return (
     <div className="min-h-screen bg-cream">
@@ -106,14 +97,9 @@ export default function LibraryPage(): JSX.Element {
           {books.length === 0 ? (
             <p className="mt-8 text-center text-sm text-muted">No books match your search.</p>
           ) : (
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {books.map((book) => (
-                <MyBookCard
-                  key={book.slug}
-                  book={book}
-                  onRead={() => openBook(book.slug)}
-                  onShare={() => shareBook(book)}
-                />
+                <MyBookCard key={book.slug} book={book} onRead={() => openBook(book.slug)} />
               ))}
             </div>
           )}
@@ -140,15 +126,9 @@ export default function LibraryPage(): JSX.Element {
             </button>
           </div>
 
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {popular.map((b, i) => (
-              <MyBookCard
-                key={b.slug}
-                book={b}
-                rank={i + 1}
-                onRead={() => openBook(b.slug)}
-                onShare={() => shareBook(b)}
-              />
+              <MyBookCard key={b.slug} book={b} rank={i + 1} onRead={() => openBook(b.slug)} />
             ))}
           </div>
         </section>
@@ -159,58 +139,124 @@ export default function LibraryPage(): JSX.Element {
 
 /* ───────── cards ───────── */
 
+/**
+ * Library book card — a calm, gold-on-surface tile that reads like a
+ * scripture plate: tradition mark, the source it's "From", the poetic
+ * headline, then chapter count and translation lineage. Fully clickable.
+ * Theme-aware: gold stays fixed, everything else flips with light/dark.
+ */
 function MyBookCard({
   book,
   onRead,
-  onShare,
   rank,
 }: {
   book: Book;
   onRead: () => void;
-  onShare: () => void;
   rank?: number;
 }): JSX.Element {
   return (
-    <article className="flex gap-4 rounded-2xl border border-hairline bg-surface p-4 shadow-sm transition-shadow duration-300 hover:shadow-md">
-      {/* cover — empty space, ready for a real cover image */}
-      <div className="relative aspect-[3/4] w-24 shrink-0 overflow-hidden rounded-xl border border-hairline bg-cream/40 sm:w-28">
-        {book.image ? (
-          <img src={book.image} alt={`${book.title} cover`} className="h-full w-full object-cover" />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted/40">
-            <ImageIcon className="h-7 w-7" />
-          </div>
-        )}
-        {rank !== undefined && (
-          <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-gold to-gold-deep text-[11px] font-extrabold text-white shadow ring-2 ring-white">
-            {rank}
-          </span>
-        )}
-      </div>
+    <button
+      type="button"
+      onClick={onRead}
+      className="group relative flex flex-col overflow-hidden rounded-3xl border border-hairline bg-gradient-to-br from-surface to-cream-surface/60 p-6 text-left shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-gold/40 hover:shadow-lift focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 sm:p-7"
+    >
+      {/* soft gold glow in the corner */}
+      <div className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gold/10 blur-3xl transition-all duration-300 group-hover:bg-gold/20" />
 
-      {/* content */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        <h3 className="font-serif text-lg font-bold leading-snug text-ink">{book.title}</h3>
-        <p className="mt-1 line-clamp-3 text-sm leading-relaxed text-muted">{book.description}</p>
+      {rank !== undefined && (
+        <span className="pointer-events-none absolute right-5 top-4 font-serif text-4xl font-bold text-gold/15">
+          {rank}
+        </span>
+      )}
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-          <button
-            type="button"
-            onClick={onRead}
-            className="rounded-full bg-gold/10 px-4 py-1.5 text-sm font-semibold text-gold-deep transition-colors hover:bg-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-          >
-            Read More
-          </button>
-          <button
-            type="button"
-            onClick={onShare}
-            aria-label={`Share ${book.title}`}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-muted transition-colors hover:bg-cream hover:text-gold-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
-          >
-            <Share2 className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </article>
+      {/* tradition mark */}
+      <TraditionIcon tradition={book.tradition} className="relative h-9 w-9 text-gold" />
+
+      {/* source */}
+      <p className="relative mt-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
+        From
+      </p>
+      <p className="relative mt-1 text-sm font-medium text-gold-deep">{book.title}</p>
+
+      {/* poetic headline */}
+      <h3 className="relative mt-2 font-serif text-2xl font-bold leading-tight text-gold sm:text-[1.7rem]">
+        {book.subtitle}
+      </h3>
+
+      {/* meta */}
+      <p className="relative mt-5 text-sm font-medium text-ink">
+        {book.chapters.length} {book.unit}
+      </p>
+      <p className="relative mt-1 text-xs text-muted">{book.language}</p>
+    </button>
+  );
+}
+
+/* ───────── tradition marks ───────── */
+
+/** Gold outline glyph per tradition (lucide where it fits, custom SVG otherwise). */
+function TraditionIcon({
+  tradition,
+  className,
+}: {
+  tradition: string;
+  className?: string;
+}): JSX.Element {
+  switch (tradition) {
+    case 'Hinduism':
+      return <Flower2 className={className} strokeWidth={1.5} />;
+    case 'Christianity':
+      return <Bird className={className} strokeWidth={1.5} />;
+    case 'Islam':
+      return <Moon className={className} strokeWidth={1.5} />;
+    case 'Sikhism':
+      return <Flame className={className} strokeWidth={1.5} />;
+    case 'Taoism':
+      return <YinYang className={className} />;
+    case 'Buddhism':
+      return <DharmaWheel className={className} />;
+    default:
+      return <BookOpen className={className} strokeWidth={1.5} />;
+  }
+}
+
+/** Yin-yang mark (Taoism) — not available in lucide. */
+function YinYang({ className }: { className?: string }): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 2a5 5 0 0 0 0 10 5 5 0 0 1 0 10" />
+      <circle cx="12" cy="7" r="0.75" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="17" r="0.75" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+/** Dharma wheel (Buddhism) — not available in lucide. */
+function DharmaWheel({ className }: { className?: string }): JSX.Element {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.5}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden
+    >
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.64 5.64l2.12 2.12M16.24 16.24l2.12 2.12M18.36 5.64l-2.12 2.12M7.76 16.24l-2.12 2.12" />
+    </svg>
   );
 }

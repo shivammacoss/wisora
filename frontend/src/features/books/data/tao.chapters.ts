@@ -11,7 +11,14 @@ export const taoChapters: Chapter[] = [
     title: 'Introduction to the Tao Te Ching',
     readingTimeMins: 4,
     isFree: true,
+    essence:
+      'The Tao Te Ching begins by refusing to define itself: the Tao that can be spoken is not the eternal Tao — only a doorway toward it.',
     content: [
+      '### 道德經 — Chapter 1',
+      '>> 道可道，非常道。\n名可名，非常名。',
+      '~ Dào kě dào, fēi cháng dào.\nMíng kě míng, fēi cháng míng.',
+      '> “The Tao that can be spoken is not the eternal Tao. The name that can be named is not the eternal name.”',
+      '## Introduction',
       'The Tao Te Ching is one of the most translated books in world literature — second only to the Bible in the number of language versions produced. Yet it is famously brief. In Chinese, the entire text contains only about 5,000 characters. It can be read in an hour. It can be studied for a lifetime.',
       'The book takes the form of 81 short chapters, each a compressed meditation on the nature of reality, virtue, leadership, and the good life. Its style is poetic and paradoxical. It contradicts itself deliberately. It refuses to define the very thing it teaches. Its opening line — “The Tao that can be told is not the eternal Tao” — establishes from the start that this book will not deliver a system, but a series of doorways.',
       'For over 2,500 years, the Tao Te Ching has shaped Chinese civilization — its philosophy, medicine, martial arts, painting, poetry, and statecraft. Beyond China, it has drawn generations of Western readers, from Enlightenment philosophers to modern psychologists, physicists, and business leaders. Its wisdom is at once ancient and startlingly contemporary.',

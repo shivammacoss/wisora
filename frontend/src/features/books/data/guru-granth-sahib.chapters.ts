@@ -12,7 +12,14 @@ export const guruGranthSahibChapters: Chapter[] = [
     title: 'Introduction to the Guru Granth Sahib',
     readingTimeMins: 4,
     isFree: true,
+    essence:
+      'The Guru Granth Sahib opens with the Mūl Mantar — the root formula of Sikh faith: there is One Creator, true by name, beyond fear, hatred, and birth.',
     content: [
+      '### ਜਪੁ — The Mūl Mantar',
+      '>> ੴ ਸਤਿ ਨਾਮੁ ਕਰਤਾ ਪੁਰਖੁ ਨਿਰਭਉ ਨਿਰਵੈਰੁ\nਅਕਾਲ ਮੂਰਤਿ ਅਜੂਨੀ ਸੈਭੰ ਗੁਰ ਪ੍ਰਸਾਦਿ॥',
+      '~ Ik Oaṅkār Sat Nām Kartā Purakh Nirbhau Nirvair\nAkāl Mūrat Ajūnī Saibhaṅ Gur Prasād.',
+      '> “One Universal Creator. Truth by name. The doer, the being. Without fear, without hatred. Timeless in form, beyond birth, self-existent — known by the Guru’s grace.”',
+      '## Introduction',
       'The Guru Granth Sahib is unlike any other scripture in world religion. It is not merely a book. For Sikhs, it is the eternal Guru — the living spiritual teacher whose presence continues the succession of the ten human Sikh Gurus. When the tenth Guru, Guru Gobind Singh, was preparing to leave his mortal form in 1708, he declared that after him there would be no eleventh human Guru. Instead, the scripture itself would be the Guru forever. He bowed before it and formally installed it as Guru — a role it has held for over three centuries.',
       'Every gurdwara (Sikh place of worship) around the world enshrines the Guru Granth Sahib as its central spiritual presence. It is placed on a raised platform, covered with fine cloths, and treated with the same reverence a living Guru would receive. Devotees bow before it, listen to its recitation, and take counsel from its verses.',
       'What makes the Guru Granth Sahib remarkable is its universal inclusivity. Alongside the compositions of six Sikh Gurus, it includes the writings of Hindu Bhakti saints (like Kabir, Namdev, Ravidas) and Muslim Sufi mystics (like Sheikh Farid). No other major world scripture opens its pages to teachers from other faiths with such generosity. Its message is that the divine is one, though called by many names.',

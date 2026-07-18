@@ -12,7 +12,13 @@ export const dhammapadaChapters: Chapter[] = [
     title: 'Introduction to the Dhammapada',
     readingTimeMins: 4,
     isFree: true,
+    essence:
+      'The Buddha’s very first verse: everything begins with the mind. Speak or act with a pure mind, and happiness follows like a shadow that never leaves.',
     content: [
+      '### धम्मपद — Yamaka Vagga, Verse 1',
+      '>> Manopubbaṅgamā dhammā, manoseṭṭhā manomayā;\nManasā ce paduṭṭhena, bhāsati vā karoti vā;\nTato naṁ dukkhamanveti, cakkaṁva vahato padaṁ.',
+      '> “Mind precedes all things; mind is their chief, and they are mind-made. If with an impure mind one speaks or acts, suffering follows — as the wheel follows the hoof of the ox.”',
+      '## Introduction',
       'The Dhammapada — a title that combines Dhamma (the truth, the teaching, the law) and pada (path, verse, foot) — can be translated as “The Path of Truth” or “The Verses of the Teaching.” Composed in the ancient Pali language, it is part of the Khuddaka Nikaya, the “Short Collection” of the Buddha’s discourses in the earliest Buddhist canon.',
       'Unlike lengthy philosophical treatises, the Dhammapada is deliberately brief. Its 423 verses are meant to be memorized, chanted, and carried in the heart. Each verse compresses a teaching that could fill volumes. Yet they are not abstract theology — they are practical instructions on how to see, how to act, how to live, and how to free oneself from suffering.',
       'For over 2,500 years, the Dhammapada has been recited by Buddhist monks and lay practitioners across Asia — in Sri Lanka, Myanmar, Thailand, Cambodia, Laos, and beyond. In the modern era, it has been translated into virtually every major language and has become perhaps the most read Buddhist text in the Western world. Its accessibility, poetic beauty, and universal ethical wisdom have made it a companion for spiritual seekers of every background.',

@@ -15,7 +15,14 @@ export const quranSurahs: Chapter[] = [
     title: 'Al-Fatihah — The Opening',
     readingTimeMins: 9,
     isFree: true,
+    essence:
+      'The Quran opens with Al-Fātiḥah — “the Opening” — seven verses of praise and guidance that every Muslim recites in daily prayer.',
     content: [
+      '### الفاتحة — Al-Fātiḥah',
+      '>> بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ\nالْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+      '~ Bismillāhi r-raḥmāni r-raḥīm\nAl-ḥamdu lillāhi rabbi l-ʿālamīn',
+      '> “In the name of Allah, the Most Gracious, the Most Merciful. All praise is for Allah, Lord of all the worlds.”',
+      '## Introduction',
       // Introduction to the Quran
       'The Quran, whose name means “the Recitation,” stands as the foundational scripture of Islam and one of the most influential books ever composed. For over 1,400 years it has shaped the lives of Muslims across every continent, guiding their prayers, ethics, laws, literature, art, and daily conduct. It is recited five times a day in prayers, memorized in its entirety by millions, and studied by scholars in every generation.',
       'Unlike scriptures that emerged over centuries or were compiled from multiple sources, the Quran was revealed to a single individual — the Prophet Muhammad — between 610 CE and 632 CE, first in Mecca and then in Medina. Muslims believe every word is divinely revealed, preserved without alteration since its compilation. This belief in perfect preservation gives the Quran a unique place among world religious texts.',

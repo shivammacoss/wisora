@@ -11,7 +11,14 @@ export const bibleChapters: Chapter[] = [
     title: 'Introduction to the Gospel of John',
     readingTimeMins: 4,
     isFree: true,
+    essence:
+      'John’s Gospel opens not with a birth but with eternity — the Word (Logos) who was with God from the beginning and became flesh, full of light and life.',
     content: [
+      '### Κατὰ Ἰωάννην — Chapter 1',
+      '>> Ἐν ἀρχῇ ἦν ὁ λόγος, καὶ ὁ λόγος ἦν πρὸς τὸν θεόν,\nκαὶ θεὸς ἦν ὁ λόγος.',
+      '~ En archē ēn ho logos, kai ho logos ēn pros ton theon,\nkai theos ēn ho logos.',
+      '> “In the beginning was the Word, and the Word was with God, and the Word was God.”',
+      '## Introduction',
       'The Gospel of John stands apart from the other three Gospels of the New Testament. Where Matthew, Mark, and Luke each present relatively similar accounts of Jesus’s life — sharing many stories and following comparable structures — John offers a strikingly different perspective. His Gospel opens not with a birth narrative or a genealogy, but with a soaring theological hymn about the eternal Word (Logos) who existed with God from the beginning and became flesh in Jesus Christ.',
       'For centuries, Christian tradition has called this book “the spiritual Gospel.” The great early theologian Clement of Alexandria wrote that while the other Gospels present the “bodily facts” of Jesus’s life, John presents “the spiritual truth” behind them. It is a book to be read slowly, meditated upon, and returned to again and again. Its verses have inspired countless works of art, hymns, mystical writings, and personal transformations.',
       'The Gospel of John is also famously accessible. Its language is simpler than the other Gospels in vocabulary — a beginner in Greek can read it more easily than the letters of Paul — yet its meaning is inexhaustibly deep. This paradox has made it one of the most translated and widely read books in human history.',
