@@ -2,7 +2,9 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import axios from 'axios';
 import { Eye, EyeOff, X } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuthStore } from '@app/store';
+import { config } from '@config/index';
 import { Button } from '@features/landing/components/ui/Button';
 import { authApi } from '../api/auth.api';
 
@@ -115,6 +117,25 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
   const handleGuest = (): void => {
     continueAsGuest();
     onSuccess();
+  };
+
+  // Google sign-in: exchange the Google ID token for a Wisora session.
+  const handleGoogle = async (credential?: string): Promise<void> => {
+    if (!credential) {
+      setError('Google sign-in failed. Please try again.');
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    try {
+      const result = await authApi.google(credential);
+      setSession(result.user, result.tokens);
+      onSuccess();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const heading =
@@ -284,6 +305,21 @@ export function AuthModal({ open, onClose, onSuccess }: AuthModalProps): JSX.Ele
                   OR
                   <span className="h-px flex-1 bg-hairline" />
                 </div>
+
+                {/* Google sign-in — shown only when a Client ID is configured */}
+                {config.googleClientId && (
+                  <div className="mb-3 flex justify-center">
+                    <GoogleLogin
+                      onSuccess={(cred) => handleGoogle(cred.credential)}
+                      onError={() => setError('Google sign-in failed. Please try again.')}
+                      theme="outline"
+                      size="large"
+                      shape="pill"
+                      text={mode === 'signup' ? 'signup_with' : 'signin_with'}
+                      width="336"
+                    />
+                  </div>
+                )}
 
                 <button
                   type="button"

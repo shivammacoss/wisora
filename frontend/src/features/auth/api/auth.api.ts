@@ -14,6 +14,12 @@ export const authApi = {
     return data.data as AuthResult;
   },
 
+  /** Sign in with a Google ID token (the credential from the GIS button). */
+  async google(idToken: string): Promise<AuthResult> {
+    const { data } = await http.post<ApiEnvelope<AuthResult>>('/auth/google', { idToken });
+    return data.data as AuthResult;
+  },
+
   /** Request a password-reset link. `devResetUrl` is only present in development. */
   async forgotPassword(email: string): Promise<{ message: string; devResetUrl?: string }> {
     const { data } = await http.post<ApiEnvelope<{ message: string; devResetUrl?: string }>>(

@@ -18,7 +18,7 @@ export function FinalCTA({ onContinueGuest, onMagicLink }: FinalCTAProps): JSX.E
   };
 
   return (
-    <section className="bg-gradient-to-b from-cream via-cream-surface to-amber-50 py-24 md:py-32">
+    <section className="bg-gradient-to-b from-cream via-cream-surface to-amber-50 py-24 dark:from-cream dark:via-cream dark:to-cream md:py-32">
       <motion.div
         initial="hidden"
         whileInView="visible"

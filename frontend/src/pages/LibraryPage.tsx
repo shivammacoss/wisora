@@ -62,10 +62,10 @@ export default function LibraryPage(): JSX.Element {
           />
           {/* reading quote — sits in the open space on the left */}
           <blockquote className="pointer-events-none absolute inset-y-0 left-0 flex w-[46%] flex-col justify-center px-5 sm:px-8 md:px-10">
-            <p className="font-serif text-base font-medium italic leading-snug text-ink/80 sm:text-xl md:text-2xl">
+            <p className="font-serif text-base font-medium italic leading-snug text-neutral-900 sm:text-xl md:text-2xl">
               “Wisdom begins in wonder.”
             </p>
-            <footer className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-ink/50 sm:mt-2 sm:text-xs">
+            <footer className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-neutral-900 sm:mt-2 sm:text-xs">
               — Socrates
             </footer>
           </blockquote>

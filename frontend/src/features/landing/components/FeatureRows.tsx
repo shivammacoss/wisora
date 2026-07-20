@@ -19,7 +19,7 @@ const ROWS: Row[] = [
     description:
       'One chapter at a time. No subscriptions, no nagging notifications. Just you and the wisdom of the ages.',
     art: (
-      <img src={infoCard1} alt="Read with focus illustration" className="w-full rounded-2xl transition-transform duration-500 ease-out group-hover:scale-110" />
+      <img src={infoCard1} alt="Read with focus illustration" className="block w-full transition-transform duration-500 ease-out group-hover:scale-110" />
     ),
     reverse: false,
   },
@@ -28,7 +28,7 @@ const ROWS: Row[] = [
     description:
       '₹1 per chapter. Pay in your local currency. Lifetime access — unlock once, read forever.',
     art: (
-      <img src={infoCard2} alt="Pay per chapter illustration" className="w-full rounded-2xl transition-transform duration-500 ease-out group-hover:scale-110" />
+      <img src={infoCard2} alt="Pay per chapter illustration" className="block w-full transition-transform duration-500 ease-out group-hover:scale-110" />
     ),
     reverse: true,
   },
@@ -37,7 +37,7 @@ const ROWS: Row[] = [
     description:
       'Bookmarks, progress, streaks, and a private reading library that syncs across devices.',
     art: (
-      <img src={infoCard3} alt="Track your journey illustration" className="w-full rounded-2xl transition-transform duration-500 ease-out group-hover:scale-110" />
+      <img src={infoCard3} alt="Track your journey illustration" className="block w-full transition-transform duration-500 ease-out group-hover:scale-110" />
     ),
     reverse: false,
   },
@@ -69,9 +69,7 @@ export function FeatureRows(): JSX.Element {
             </div>
 
             {/* illustration */}
-            <div className="group rounded-3xl bg-cream p-6 shadow-soft">
-              <div className="mx-auto max-w-sm overflow-hidden rounded-2xl">{row.art}</div>
-            </div>
+            <div className="group overflow-hidden rounded-3xl shadow-soft">{row.art}</div>
           </motion.div>
         ))}
       </div>
