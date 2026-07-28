@@ -1,5 +1,6 @@
 import { connectDatabase, disconnectDatabase } from '@config/database';
 import { logger } from '@common/utils/logger';
+import { seedAdmin } from './admin.seed';
 
 /**
  * Seed entrypoint. Run with `npm run seed`.
@@ -9,6 +10,7 @@ async function seed(): Promise<void> {
   await connectDatabase();
   logger.info('🌱 Seeding database…');
 
+  await seedAdmin();
   // TODO: await seedBooks(); await seedChapters();
 
   logger.info('✅ Seeding complete');

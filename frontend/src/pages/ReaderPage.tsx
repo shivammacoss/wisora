@@ -14,7 +14,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { getBookBySlug } from '@features/books';
-import { chapterUnlocked, useLibraryStore, useThemeStore } from '@app/store';
+import { chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
 import { ROUTES } from '@shared/constants';
 import { cn } from '@shared/utils/cn';
 
@@ -31,6 +31,8 @@ export default function ReaderPage(): JSX.Element {
 
   const unlocked = useLibraryStore((s) => s.unlocked);
   const markRead = useLibraryStore((s) => s.markRead);
+  // Admins get full, free access to every chapter.
+  const isAdmin = useAuthStore((s) => s.user?.role === 'admin');
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggle);
   const isDark = theme === 'dark';
@@ -43,7 +45,9 @@ export default function ReaderPage(): JSX.Element {
   const chapter = book?.chapters.find((c) => c.order === order);
 
   const accessible =
-    book && chapter ? chapterUnlocked(unlocked, book.slug, chapter.order, chapter.isFree) : false;
+    book && chapter
+      ? isAdmin || chapterUnlocked(unlocked, book.slug, chapter.order, chapter.isFree)
+      : false;
 
   // Record progress + reset per-chapter UI whenever the chapter changes.
   useEffect(() => {
@@ -60,7 +64,7 @@ export default function ReaderPage(): JSX.Element {
   const prev = book.chapters.find((c) => c.order === order - 1);
   const next = book.chapters.find((c) => c.order === order + 1);
   const nextAccessible = next
-    ? chapterUnlocked(unlocked, book.slug, next.order, next.isFree)
+    ? isAdmin || chapterUnlocked(unlocked, book.slug, next.order, next.isFree)
     : false;
 
   const goPrev = (): void => {

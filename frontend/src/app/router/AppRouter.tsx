@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { ROUTES } from '@shared/constants';
 import { ProtectedRoute } from './ProtectedRoute';
+import { AdminRoute } from './AdminRoute';
 
 // Lazy-loaded pages → automatic code-splitting per route.
 const LoginPage = lazy(() => import('@pages/LoginPage'));
@@ -10,6 +11,7 @@ const LibraryPage = lazy(() => import('@pages/LibraryPage'));
 const BookDetailPage = lazy(() => import('@pages/BookDetailPage'));
 const ReaderPage = lazy(() => import('@pages/ReaderPage'));
 const ProfilePage = lazy(() => import('@pages/ProfilePage'));
+const AdminDashboardPage = lazy(() => import('@pages/AdminDashboardPage'));
 
 const router = createBrowserRouter([
   // Public login gate.
@@ -24,6 +26,11 @@ const router = createBrowserRouter([
       { path: ROUTES.reader(), element: <ReaderPage /> },
       { path: ROUTES.profile, element: <ProfilePage /> },
     ],
+  },
+  // Admin panel — requires an admin session.
+  {
+    element: <AdminRoute />,
+    children: [{ path: ROUTES.admin, element: <AdminDashboardPage /> }],
   },
 ]);
 

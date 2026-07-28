@@ -1,5 +1,6 @@
-import { NotFoundError } from '@common/errors';
+import { BadRequestError, NotFoundError } from '@common/errors';
 import type { PaginatedResult } from '@common/interfaces';
+import type { UserRole } from '@common/constants';
 import type { UserDocument } from '@modules/auth/auth.model';
 import type { IUserRepository } from './users.repository';
 import type { PublicUserDto, UpdateProfileDto } from './users.dto';
@@ -23,6 +24,21 @@ export class UserService {
     const user = await this.repo.updateProfile(id, dto);
     if (!user) throw new NotFoundError('User not found');
     return toPublicUser(user);
+  }
+
+  /** Admin: change a user's role. */
+  async changeRole(id: string, actingUserId: string, role: UserRole): Promise<PublicUserDto> {
+    if (id === actingUserId) throw new BadRequestError('You cannot change your own role');
+    const user = await this.repo.updateRole(id, role);
+    if (!user) throw new NotFoundError('User not found');
+    return toPublicUser(user);
+  }
+
+  /** Admin: delete a user (cannot delete oneself). */
+  async remove(id: string, actingUserId: string): Promise<void> {
+    if (id === actingUserId) throw new BadRequestError('You cannot delete your own account here');
+    const user = await this.repo.remove(id);
+    if (!user) throw new NotFoundError('User not found');
   }
 }
 

@@ -32,4 +32,18 @@ export class UserController {
     const profile = await userService.updateProfile(user!.sub, req.body);
     return ApiResponse.success(res, profile);
   }
+
+  /** Admin: change a user's role (user ↔ admin). */
+  static async updateRole(req: Request, res: Response): Promise<Response> {
+    const { user } = req as AuthenticatedRequest;
+    const updated = await userService.changeRole(req.params.id, user!.sub, req.body.role);
+    return ApiResponse.success(res, updated);
+  }
+
+  /** Admin: delete a user. */
+  static async remove(req: Request, res: Response): Promise<Response> {
+    const { user } = req as AuthenticatedRequest;
+    await userService.remove(req.params.id, user!.sub);
+    return ApiResponse.success(res, { id: req.params.id });
+  }
 }

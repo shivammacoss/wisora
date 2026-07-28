@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ChevronDown, LogOut, User } from 'lucide-react';
+import { ChevronDown, LogOut, MessageSquarePlus, Shield, User } from 'lucide-react';
 import { useAuthStore } from '@app/store';
+import { FeedbackModal } from '@features/feedback';
 import { ROUTES } from '@shared/constants';
 import { cn } from '@shared/utils/cn';
 
@@ -25,8 +26,10 @@ export function UserMenu(): JSX.Element {
   const user = useAuthStore((s) => s.user);
   const isGuest = useAuthStore((s) => s.isGuest);
   const logout = useAuthStore((s) => s.logout);
+  const isAdmin = user?.role === 'admin';
 
   const [open, setOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,6 +99,19 @@ export function UserMenu(): JSX.Element {
 
             <div className="my-1 h-px bg-hairline" />
 
+            {isAdmin && (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  navigate(ROUTES.admin);
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-gold-deep transition-colors hover:bg-gold/10"
+              >
+                <Shield className="h-4 w-4" /> Admin panel
+              </button>
+            )}
             <button
               type="button"
               role="menuitem"
@@ -107,6 +123,19 @@ export function UserMenu(): JSX.Element {
             >
               <User className="h-4 w-4" /> Profile
             </button>
+            {!isGuest && (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  setFeedbackOpen(true);
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-body transition-colors hover:bg-cream hover:text-ink"
+              >
+                <MessageSquarePlus className="h-4 w-4" /> Send feedback
+              </button>
+            )}
             <button
               type="button"
               role="menuitem"
@@ -118,6 +147,8 @@ export function UserMenu(): JSX.Element {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <FeedbackModal open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </div>
   );
 }

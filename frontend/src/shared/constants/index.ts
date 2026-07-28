@@ -7,6 +7,7 @@ export const ROUTES = {
   bookDetail: (bookId = ':bookId') => `/book/${bookId}`,
   reader: (bookId = ':bookId', chapterId = ':chapterId') => `/book/${bookId}/chapter/${chapterId}`,
   profile: '/profile',
+  admin: '/admin',
 } as const;
 
 /** React Query cache keys — keep them here to avoid typos and ease invalidation. */

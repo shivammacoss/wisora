@@ -33,7 +33,9 @@ export default function LoginPage(): JSX.Element {
   const openAuth = (): void => setAuthOpen(true);
   const handleAuthSuccess = (): void => {
     setAuthOpen(false);
-    navigate(ROUTES.library);
+    // Admins land on the admin panel; everyone else on their library.
+    const role = useAuthStore.getState().user?.role;
+    navigate(role === 'admin' ? ROUTES.admin : ROUTES.library);
   };
 
   const enterAsGuest = (): void => {

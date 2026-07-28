@@ -24,4 +24,12 @@ export class PaymentsController {
     }
     return ApiResponse.success(res, result);
   }
+
+  /** Admin-only: full payment history. */
+  static async history(req: Request, res: Response): Promise<Response> {
+    const page = Number(req.query.page ?? 1);
+    const limit = Number(req.query.limit ?? 50);
+    const { items, total } = await paymentsService.listAll(page, limit);
+    return ApiResponse.success(res, items, 200, { total, page, limit });
+  }
 }

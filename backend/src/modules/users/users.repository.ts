@@ -1,4 +1,5 @@
 import { UserModel, type UserDocument } from '@modules/auth/auth.model';
+import type { UserRole } from '@common/constants';
 import type { UpdateProfileDto } from './users.dto';
 
 /**
@@ -9,6 +10,8 @@ export interface IUserRepository {
   list(skip: number, limit: number): Promise<{ items: UserDocument[]; total: number }>;
   findById(id: string): Promise<UserDocument | null>;
   updateProfile(id: string, data: UpdateProfileDto): Promise<UserDocument | null>;
+  updateRole(id: string, role: UserRole): Promise<UserDocument | null>;
+  remove(id: string): Promise<UserDocument | null>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -26,5 +29,13 @@ export class UserRepository implements IUserRepository {
 
   updateProfile(id: string, data: UpdateProfileDto): Promise<UserDocument | null> {
     return UserModel.findByIdAndUpdate(id, data, { new: true, runValidators: true }).exec();
+  }
+
+  updateRole(id: string, role: UserRole): Promise<UserDocument | null> {
+    return UserModel.findByIdAndUpdate(id, { role }, { new: true, runValidators: true }).exec();
+  }
+
+  remove(id: string): Promise<UserDocument | null> {
+    return UserModel.findByIdAndDelete(id).exec();
   }
 }

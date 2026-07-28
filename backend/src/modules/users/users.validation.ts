@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Currency } from '@common/constants';
+import { Currency, UserRole } from '@common/constants';
 
 /** Zod schemas for the users module (consumed by the `validate` middleware). */
 
@@ -17,5 +17,10 @@ export const updateProfileSchema = z
     message: 'Provide at least one field to update',
   });
 
+export const updateRoleSchema = z.object({
+  role: z.nativeEnum(UserRole),
+});
+
 export type ListUsersQuery = z.infer<typeof listUsersQuerySchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type UpdateRoleInput = z.infer<typeof updateRoleSchema>;

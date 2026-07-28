@@ -3,7 +3,7 @@ import { authenticate, authorize, validate } from '@common/middlewares';
 import { asyncHandler } from '@common/utils/asyncHandler';
 import { UserRole } from '@common/constants';
 import { UserController } from './users.controller';
-import { listUsersQuerySchema, updateProfileSchema } from './users.validation';
+import { listUsersQuerySchema, updateProfileSchema, updateRoleSchema } from './users.validation';
 
 const router = Router();
 
@@ -21,5 +21,14 @@ router.get(
 // Self-service profile.
 router.get('/me', asyncHandler(UserController.me));
 router.patch('/me', validate({ body: updateProfileSchema }), asyncHandler(UserController.updateMe));
+
+// Admin user-management.
+router.patch(
+  '/:id/role',
+  authorize(UserRole.ADMIN),
+  validate({ body: updateRoleSchema }),
+  asyncHandler(UserController.updateRole),
+);
+router.delete('/:id', authorize(UserRole.ADMIN), asyncHandler(UserController.remove));
 
 export const userRoutes = router;
