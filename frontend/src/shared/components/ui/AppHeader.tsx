@@ -23,8 +23,8 @@ export function AppHeader({ right, showBack = false }: AppHeaderProps): JSX.Elem
           {showBack && (
             <button
               type="button"
-              onClick={() => navigate(-1)}
-              aria-label="Go back"
+              onClick={() => navigate(ROUTES.library)}
+              aria-label="Back to library"
               className="flex h-10 w-10 items-center justify-center rounded-full text-ink transition-colors hover:bg-cream-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
             >
               <ArrowLeft className="h-5 w-5" />
