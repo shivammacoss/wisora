@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { getBookBySlug } from '@features/books';
 import { chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
+import { FeedbackModal } from '@features/feedback';
 import { ROUTES } from '@shared/constants';
 import { cn } from '@shared/utils/cn';
 
@@ -39,6 +40,7 @@ export default function ReaderPage(): JSX.Element {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const book = getBookBySlug(bookId);
   const order = Number(chapterId);
@@ -209,7 +211,7 @@ export default function ReaderPage(): JSX.Element {
             >
               <Heart className={cn('h-5 w-5', liked ? 'fill-gold text-gold' : 'text-muted')} />
             </ToolbarButton>
-            <ToolbarButton onClick={undefined} label="Comments coming soon">
+            <ToolbarButton onClick={() => setFeedbackOpen(true)} label="Send feedback on this chapter">
               <MessageSquare className="h-5 w-5 text-muted" />
             </ToolbarButton>
             <ToolbarButton onClick={toggleTheme} label={isDark ? 'Light mode' : 'Dark mode'}>
@@ -229,6 +231,12 @@ export default function ReaderPage(): JSX.Element {
           </ToolbarButton>
         </div>
       </div>
+
+      <FeedbackModal
+        open={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        defaultSubject={`${book.title} — Chapter ${chapter.order}: ${chapter.title}`}
+      />
     </div>
   );
 }

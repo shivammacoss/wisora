@@ -7,6 +7,8 @@ import { feedbackApi } from '../api/feedback.api';
 interface FeedbackModalProps {
   open: boolean;
   onClose: () => void;
+  /** Pre-fill the subject (e.g. the chapter the reader is giving feedback on). */
+  defaultSubject?: string;
 }
 
 function errMsg(e: unknown): string {
@@ -19,7 +21,7 @@ function errMsg(e: unknown): string {
 }
 
 /** Simple modal for a signed-in user to send feedback to the Wisora team. */
-export function FeedbackModal({ open, onClose }: FeedbackModalProps): JSX.Element {
+export function FeedbackModal({ open, onClose, defaultSubject }: FeedbackModalProps): JSX.Element {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -28,7 +30,7 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps): JSX.Elemen
 
   useEffect(() => {
     if (!open) return;
-    setSubject('');
+    setSubject(defaultSubject ?? '');
     setMessage('');
     setError(null);
     setDone(false);
@@ -37,7 +39,7 @@ export function FeedbackModal({ open, onClose }: FeedbackModalProps): JSX.Elemen
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
+  }, [open, onClose, defaultSubject]);
 
   const submit = async (): Promise<void> => {
     if (subject.trim().length < 2 || message.trim().length < 2) {
