@@ -6,7 +6,7 @@ import { UserMenu } from '@shared/components/ui/UserMenu';
 import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
 import { TraditionIcon } from '@shared/components/ui/TraditionIcon';
 import { ROUTES } from '@shared/constants';
-import libraryBanner from '@assets/images/banner2.png';
+import libraryBanner from '@assets/images/banner3.png';
 
 /** Signed-in dashboard: topbar + banner + book cards + popular reads. */
 export default function LibraryPage(): JSX.Element {
