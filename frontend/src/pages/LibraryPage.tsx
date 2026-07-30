@@ -55,12 +55,21 @@ export default function LibraryPage(): JSX.Element {
 
       <main className="mx-auto max-w-7xl space-y-7 p-5 lg:p-7">
         {/* ── Featured banner ── */}
-        <section aria-label="Featured banner" className="overflow-hidden rounded-3xl shadow-sm">
+        <section aria-label="Featured banner" className="relative overflow-hidden rounded-3xl shadow-sm">
           <img
             src={libraryBanner}
             alt="Featured banner"
             className="block h-auto w-full object-cover"
           />
+          {/* minimalist headline in the banner's open (cream) space on the left */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex w-[42%] flex-col justify-center px-5 sm:px-8 md:px-10">
+            <h2 className="font-serif text-lg font-bold leading-tight text-neutral-900 sm:text-2xl md:text-4xl">
+              Sacred wisdom, daily.
+            </h2>
+            <p className="mt-1 text-[11px] font-medium text-neutral-900/70 sm:mt-2 sm:text-sm md:text-base">
+              One chapter at a time.
+            </p>
+          </div>
         </section>
 
         {/* ── My Books ── */}
