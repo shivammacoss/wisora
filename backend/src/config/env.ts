@@ -31,6 +31,10 @@ const envSchema = z.object({
   // Google OAuth — the same Client ID used by the frontend GIS button.
   GOOGLE_CLIENT_ID: z.string().optional(),
 
+  // Fixed password for the seeded support@wisora.org admin. When set, `npm run
+  // seed` creates/updates the admin to use exactly this password.
+  ADMIN_PASSWORD: z.string().min(6).optional(),
+
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().default(587),
   SMTP_SECURE: z.coerce.boolean().default(false),

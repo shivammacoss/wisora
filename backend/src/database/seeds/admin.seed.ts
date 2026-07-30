@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 import { UserModel } from '@modules/auth/auth.model';
 import { hashPassword } from '@common/utils/password';
 import { UserRole, AuthProvider } from '@common/constants';
+import { env } from '@config/env';
 import { logger } from '@common/utils/logger';
 
 /** The single, well-known support/admin account. */
@@ -15,20 +16,35 @@ export const ADMIN_EMAIL = 'support@wisora.org';
  */
 export async function seedAdmin(): Promise<void> {
   const existing = await UserModel.findOne({ email: ADMIN_EMAIL }).exec();
+  // A fixed password from env takes priority; otherwise generate a random one.
+  const fixed = env.ADMIN_PASSWORD;
 
   if (existing) {
+    let changed = false;
     if (existing.role !== UserRole.ADMIN) {
       existing.role = UserRole.ADMIN;
+      changed = true;
+    }
+    if (fixed) {
+      // Reset the existing admin to the fixed password.
+      existing.password = await hashPassword(fixed);
+      changed = true;
+    }
+    if (changed) {
       await existing.save();
-      logger.info(`🔑 Promoted ${ADMIN_EMAIL} to admin.`);
+      logger.info(
+        fixed
+          ? `🔑 Admin ${ADMIN_EMAIL} updated — password set from ADMIN_PASSWORD.`
+          : `🔑 Promoted ${ADMIN_EMAIL} to admin.`,
+      );
     } else {
       logger.info(`🔑 Admin ${ADMIN_EMAIL} already exists — leaving it untouched.`);
     }
     return;
   }
 
-  // Simple, readable, random one-time password, e.g. "Wisora@9f3a1c7d".
-  const password = `Wisora@${randomBytes(4).toString('hex')}`;
+  // New admin: use the fixed password if provided, else a random one-time one.
+  const password = fixed ?? `Wisora@${randomBytes(4).toString('hex')}`;
   await UserModel.create({
     name: 'Wisora Admin',
     email: ADMIN_EMAIL,
@@ -40,8 +56,11 @@ export async function seedAdmin(): Promise<void> {
   logger.info('══════════════════════════════════════════════════');
   logger.info('  ✅ Admin account created');
   logger.info(`  Email:    ${ADMIN_EMAIL}`);
-  logger.info(`  Password: ${password}`);
-  logger.info('  Save this now — it is shown only once.');
-  logger.info('  You can change it anytime via "Forgot password".');
+  if (fixed) {
+    logger.info('  Password: (from ADMIN_PASSWORD in .env)');
+  } else {
+    logger.info(`  Password: ${password}`);
+    logger.info('  Save this now — it is shown only once.');
+  }
   logger.info('══════════════════════════════════════════════════');
 }
