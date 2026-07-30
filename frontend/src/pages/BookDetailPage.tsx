@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getBookBySlug, type Chapter } from '@features/books';
 import { ChapterRow, PaywallModal } from '@features/book';
+import { ChapterContentEditor } from '@features/chapters';
 import { useChapterCheckout } from '@features/payments';
 import { CurrencySelector } from '@features/landing/components/ui/CurrencySelector';
 import { chapterUnlocked, useAuthStore, useCurrencyStore, useLibraryStore, toPaymentCurrency } from '@app/store';
@@ -25,6 +26,7 @@ export default function BookDetailPage(): JSX.Element {
   const isAdmin = useAuthStore((s) => s.user?.role === 'admin');
 
   const [paywallChapter, setPaywallChapter] = useState<Chapter | null>(null);
+  const [editChapter, setEditChapter] = useState<Chapter | null>(null);
 
   // Grant access after a confirmed payment (real or demo), then open the reader.
   // Declared before the early return below to satisfy the Rules of Hooks.
@@ -103,6 +105,7 @@ export default function BookDetailPage(): JSX.Element {
                 currencySymbol={currency.symbol}
                 onRead={() => openReader(chapter)}
                 onUnlock={() => setPaywallChapter(chapter)}
+                onEditContent={isAdmin ? () => setEditChapter(chapter) : undefined}
               />
             );
           })}
@@ -124,6 +127,15 @@ export default function BookDetailPage(): JSX.Element {
           paywallChapter && checkout.start(book, paywallChapter, toPaymentCurrency(currency.code))
         }
       />
+
+      {/* admin: chapter content editor */}
+      {editChapter && (
+        <ChapterContentEditor
+          book={book}
+          chapter={editChapter}
+          onClose={() => setEditChapter(null)}
+        />
+      )}
     </div>
   );
 }

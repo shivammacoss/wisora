@@ -1,4 +1,4 @@
-import { BookOpen, Check, Lock } from 'lucide-react';
+import { BookOpen, Check, Lock, PencilLine } from 'lucide-react';
 import { Button } from '@features/landing/components/ui/Button';
 import type { Book, Chapter } from '@features/books';
 
@@ -15,6 +15,8 @@ interface ChapterRowProps {
   onRead: () => void;
   /** Request to unlock a locked chapter (opens the paywall). */
   onUnlock: () => void;
+  /** Admin only: edit this chapter's content. Renders a pencil when provided. */
+  onEditContent?: () => void;
 }
 
 /** A single chapter row: free/owned chapters read; locked ones show a price. */
@@ -25,6 +27,7 @@ export function ChapterRow({
   currencySymbol,
   onRead,
   onUnlock,
+  onEditContent,
 }: ChapterRowProps): JSX.Element {
   return (
     <li className="flex items-center gap-4 rounded-2xl border border-hairline bg-surface p-4 shadow-soft transition-shadow duration-300 hover:shadow-lift">
@@ -41,6 +44,19 @@ export function ChapterRow({
         <h4 className="truncate font-semibold text-ink">{chapter.title}</h4>
         <p className="text-sm text-muted">{chapter.readingTimeMins} min read</p>
       </div>
+
+      {/* admin: edit content */}
+      {onEditContent && (
+        <button
+          type="button"
+          onClick={onEditContent}
+          title="Edit chapter content (admin)"
+          aria-label="Edit chapter content"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-hairline bg-cream-surface text-gold-deep transition-colors hover:border-gold/50 hover:bg-gold/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        >
+          <PencilLine className="h-4 w-4" />
+        </button>
+      )}
 
       {unlocked ? (
         <div className="flex items-center gap-3">

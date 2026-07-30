@@ -16,6 +16,7 @@ import {
 import { getBookBySlug } from '@features/books';
 import { chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
 import { FeedbackModal } from '@features/feedback';
+import { chaptersApi } from '@features/chapters';
 import { ROUTES } from '@shared/constants';
 import { cn } from '@shared/utils/cn';
 
@@ -41,6 +42,8 @@ export default function ReaderPage(): JSX.Element {
   const [menuOpen, setMenuOpen] = useState(false);
   const [liked, setLiked] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  // Admin-authored content from the backend (falls back to bundled content).
+  const [remoteBlocks, setRemoteBlocks] = useState<string[] | null>(null);
 
   const book = getBookBySlug(bookId);
   const order = Number(chapterId);
@@ -58,6 +61,24 @@ export default function ReaderPage(): JSX.Element {
     setMenuOpen(false);
     window.scrollTo({ top: 0 });
   }, [book, chapter, accessible, markRead]);
+
+  // Load admin-authored content for this chapter (falls back to bundled content).
+  useEffect(() => {
+    let alive = true;
+    setRemoteBlocks(null);
+    if (!bookId || Number.isNaN(order)) return;
+    chaptersApi
+      .getContent(bookId, order)
+      .then((content) => {
+        if (alive) setRemoteBlocks(content?.blocks ?? null);
+      })
+      .catch(() => {
+        /* keep bundled content on any error */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [bookId, order]);
 
   // Missing data → back to library. Locked chapter → back to the book's paywall.
   if (!book || !chapter) return <Navigate to={ROUTES.library} replace />;
@@ -79,7 +100,8 @@ export default function ReaderPage(): JSX.Element {
   };
 
   // Split content into the essence callout + the reflection body.
-  const paras = chapter.content ?? [];
+  // Admin-authored content (from the backend) takes precedence over bundled.
+  const paras = remoteBlocks && remoteBlocks.length > 0 ? remoteBlocks : (chapter.content ?? []);
   const essence = chapter.essence ?? paras[0];
   const body = chapter.essence ? paras : paras.slice(1);
   const firstParaIdx = body.findIndex((b) => blockType(b) === 'p');
