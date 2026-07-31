@@ -1,5 +1,3 @@
-import mammoth from 'mammoth';
-
 /** Content blocks ↔ a single editable text value (one block per line). */
 export function blocksFromText(text: string): string[] {
   return text
@@ -23,6 +21,8 @@ export const ACCEPTED_DOC_TYPES = '.txt,.md,.markdown,.docx';
 export async function parseDocumentToBlocks(file: File): Promise<string[]> {
   const isDocx = file.name.toLowerCase().endsWith('.docx');
   if (isDocx) {
+    // Load the (heavy) docx parser only when a .docx is actually uploaded.
+    const mammoth = (await import('mammoth')).default;
     const arrayBuffer = await file.arrayBuffer();
     const { value } = await mammoth.extractRawText({ arrayBuffer });
     return blocksFromText(value);

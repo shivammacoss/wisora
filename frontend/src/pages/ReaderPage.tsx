@@ -11,12 +11,13 @@ import {
   MessageSquare,
   Moon,
   MoreVertical,
+  PencilLine,
   Sun,
 } from 'lucide-react';
 import { getBookBySlug } from '@features/books';
 import { chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
 import { FeedbackModal } from '@features/feedback';
-import { chaptersApi } from '@features/chapters';
+import { chaptersApi, ChapterContentEditor } from '@features/chapters';
 import { ROUTES } from '@shared/constants';
 import { cn } from '@shared/utils/cn';
 
@@ -42,6 +43,7 @@ export default function ReaderPage(): JSX.Element {
   const [menuOpen, setMenuOpen] = useState(false);
   const [liked, setLiked] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   // Admin-authored content from the backend (falls back to bundled content).
   const [remoteBlocks, setRemoteBlocks] = useState<string[] | null>(null);
 
@@ -243,6 +245,14 @@ export default function ReaderPage(): JSX.Element {
                 <Moon className="h-5 w-5 text-muted" />
               )}
             </ToolbarButton>
+            {isAdmin && (
+              <ToolbarButton
+                onClick={() => setEditOpen(true)}
+                label="Edit chapter content (admin)"
+              >
+                <PencilLine className="h-5 w-5 text-gold" />
+              </ToolbarButton>
+            )}
           </div>
 
           <ToolbarButton
@@ -259,6 +269,16 @@ export default function ReaderPage(): JSX.Element {
         onClose={() => setFeedbackOpen(false)}
         defaultSubject={`${book.title} — Chapter ${chapter.order}: ${chapter.title}`}
       />
+
+      {/* admin: edit this chapter's content — saved content shows live */}
+      {editOpen && (
+        <ChapterContentEditor
+          book={book}
+          chapter={chapter}
+          onClose={() => setEditOpen(false)}
+          onSaved={(blocks) => setRemoteBlocks(blocks)}
+        />
+      )}
     </div>
   );
 }
