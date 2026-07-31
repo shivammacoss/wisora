@@ -176,7 +176,7 @@ export default function ReaderPage(): JSX.Element {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="mx-auto w-full max-w-2xl flex-1 px-6 py-9 md:py-12"
+        className="mx-auto w-full max-w-2xl flex-1 px-6 py-9 md:max-w-3xl md:py-12 lg:max-w-5xl lg:px-10 xl:max-w-6xl"
       >
         <p className="inline-flex items-center gap-1.5 text-sm text-muted">
           <Clock className="h-4 w-4" /> {chapter.readingTimeMins} min read
@@ -218,7 +218,7 @@ export default function ReaderPage(): JSX.Element {
 
       {/* ── floating action bar ── */}
       <div className="sticky bottom-0 z-30 border-t border-hairline bg-cream/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-2.5">
+        <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-2.5 md:max-w-3xl lg:max-w-5xl lg:px-10 xl:max-w-6xl">
           <ToolbarButton
             onClick={goPrev}
             disabled={!prev}
