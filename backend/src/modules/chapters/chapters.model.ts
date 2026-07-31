@@ -8,6 +8,10 @@ import { Schema, model, type Document, type Model, Types } from 'mongoose';
 export interface ChapterContentDocument extends Document {
   bookSlug: string;
   chapterOrder: number;
+  /** Optional admin override for the chapter title (falls back to bundled). */
+  title?: string;
+  /** Optional admin override for the "Essence" callout (falls back to bundled). */
+  essence?: string;
   blocks: string[];
   updatedBy?: Types.ObjectId;
   createdAt: Date;
@@ -18,6 +22,8 @@ const chapterContentSchema = new Schema<ChapterContentDocument>(
   {
     bookSlug: { type: String, required: true, trim: true, lowercase: true },
     chapterOrder: { type: Number, required: true, min: 1 },
+    title: { type: String, trim: true },
+    essence: { type: String, trim: true },
     blocks: { type: [String], default: [] },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },

@@ -17,10 +17,11 @@ export class ChaptersController {
   static async saveContent(req: Request, res: Response): Promise<Response> {
     const { user } = req as AuthenticatedRequest;
     const { bookSlug, chapterOrder } = req.params;
+    const { blocks, title, essence } = req.body;
     const saved = await service.saveContent(
       bookSlug,
       Number(chapterOrder),
-      req.body.blocks,
+      { blocks, title, essence },
       user!.sub,
     );
     return ApiResponse.success(res, saved);

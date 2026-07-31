@@ -10,12 +10,19 @@ import {
   textFromBlocks,
 } from '../lib/parseDocument';
 
+/** What a save produces — used to refresh the reader live. */
+export interface SavedChapter {
+  blocks: string[];
+  title?: string;
+  essence?: string;
+}
+
 interface ChapterContentEditorProps {
   book: Book;
   chapter: Chapter;
   onClose: () => void;
   /** Called after a successful save (e.g. to refresh the reader). */
-  onSaved?: (blocks: string[]) => void;
+  onSaved?: (saved: SavedChapter) => void;
 }
 
 /**
@@ -28,6 +35,8 @@ export function ChapterContentEditor({
   onClose,
   onSaved,
 }: ChapterContentEditorProps): JSX.Element {
+  const [title, setTitle] = useState('');
+  const [essence, setEssence] = useState('');
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -46,13 +55,15 @@ export function ChapterContentEditor({
         if (!alive) return;
         const blocks = content?.blocks ?? chapter.content ?? [];
         setText(textFromBlocks(blocks));
+        setTitle(content?.title ?? chapter.title ?? '');
+        setEssence(content?.essence ?? chapter.essence ?? '');
       })
       .catch(() => alive && setError('Could not load existing content.'))
       .finally(() => alive && setLoading(false));
     return () => {
       alive = false;
     };
-  }, [book.slug, chapter.order, chapter.content]);
+  }, [book.slug, chapter.order, chapter.content, chapter.title, chapter.essence]);
 
   const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = e.target.files?.[0];
@@ -74,8 +85,18 @@ export function ChapterContentEditor({
     setError(null);
     try {
       const blocks = blocksFromText(text);
-      await chaptersApi.saveContent(book.slug, chapter.order, blocks);
-      onSaved?.(blocks);
+      const trimmedTitle = title.trim();
+      const trimmedEssence = essence.trim();
+      await chaptersApi.saveContent(book.slug, chapter.order, {
+        blocks,
+        title: trimmedTitle || undefined,
+        essence: trimmedEssence || undefined,
+      });
+      onSaved?.({
+        blocks,
+        title: trimmedTitle || undefined,
+        essence: trimmedEssence || undefined,
+      });
       onClose();
     } catch (err) {
       const msg =
@@ -139,6 +160,44 @@ export function ChapterContentEditor({
               <p className="py-10 text-center text-sm text-muted">Loading…</p>
             ) : (
               <>
+                {/* Chapter title */}
+                <label
+                  htmlFor="chapter-title"
+                  className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted"
+                >
+                  Chapter title
+                </label>
+                <input
+                  id="chapter-title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Arjuna's Dilemma"
+                  className="mb-4 w-full rounded-xl border border-hairline bg-cream/30 px-3 py-2.5 font-serif text-base font-bold text-ink placeholder:font-sans placeholder:font-normal placeholder:text-muted/70 focus:border-gold focus:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
+                />
+
+                {/* Essence callout */}
+                <label
+                  htmlFor="chapter-essence"
+                  className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted"
+                >
+                  Essence
+                </label>
+                <textarea
+                  id="chapter-essence"
+                  value={essence}
+                  onChange={(e) => setEssence(e.target.value)}
+                  rows={3}
+                  placeholder="A one- or two-sentence distilled summary shown in the gold callout."
+                  className="mb-5 w-full resize-y rounded-xl border border-hairline bg-cream/30 px-3 py-2.5 font-serif text-sm italic leading-relaxed text-ink placeholder:not-italic placeholder:text-muted/70 focus:border-gold focus:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
+                />
+
+                {/* Reflection body */}
+                <label
+                  htmlFor="chapter-body"
+                  className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted"
+                >
+                  Reflection (body)
+                </label>
                 <div className="mb-3 flex flex-wrap items-center gap-3">
                   <input
                     ref={fileRef}
@@ -158,6 +217,7 @@ export function ChapterContentEditor({
                 </div>
 
                 <textarea
+                  id="chapter-body"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   spellCheck={false}

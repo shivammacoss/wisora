@@ -11,9 +11,11 @@ export const chapterParamsSchema = z.object({
   chapterOrder: z.coerce.number().int().positive().max(1000),
 });
 
-/** Body: the authored content as an array of blocks. */
+/** Body: the authored content — blocks plus optional title / essence overrides. */
 export const saveContentSchema = z.object({
   blocks: z.array(z.string().max(5000)).max(1000),
+  title: z.string().trim().max(200).optional(),
+  essence: z.string().trim().max(2000).optional(),
 });
 
 export type ChapterParams = z.infer<typeof chapterParamsSchema>;

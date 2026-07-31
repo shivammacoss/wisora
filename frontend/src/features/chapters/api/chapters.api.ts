@@ -5,8 +5,19 @@ import type { ApiEnvelope } from '@shared/types';
 export interface ChapterContent {
   bookSlug: string;
   chapterOrder: number;
+  /** Admin title override (null → use bundled title). */
+  title: string | null;
+  /** Admin essence override (null → use bundled essence). */
+  essence: string | null;
   blocks: string[];
   updatedAt: string | null;
+}
+
+/** Payload an admin sends when saving a chapter. */
+export interface SaveContentInput {
+  blocks: string[];
+  title?: string;
+  essence?: string;
 }
 
 export const chaptersApi = {
@@ -22,11 +33,11 @@ export const chaptersApi = {
   async saveContent(
     bookSlug: string,
     chapterOrder: number,
-    blocks: string[],
+    input: SaveContentInput,
   ): Promise<ChapterContent> {
     const { data } = await http.put<ApiEnvelope<ChapterContent>>(
       `/chapters/${bookSlug}/${chapterOrder}`,
-      { blocks },
+      input,
     );
     return data.data as ChapterContent;
   },

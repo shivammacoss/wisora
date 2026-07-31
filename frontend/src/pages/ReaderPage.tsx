@@ -46,6 +46,8 @@ export default function ReaderPage(): JSX.Element {
   const [editOpen, setEditOpen] = useState(false);
   // Admin-authored content from the backend (falls back to bundled content).
   const [remoteBlocks, setRemoteBlocks] = useState<string[] | null>(null);
+  const [remoteTitle, setRemoteTitle] = useState<string | null>(null);
+  const [remoteEssence, setRemoteEssence] = useState<string | null>(null);
 
   const book = getBookBySlug(bookId);
   const order = Number(chapterId);
@@ -68,11 +70,16 @@ export default function ReaderPage(): JSX.Element {
   useEffect(() => {
     let alive = true;
     setRemoteBlocks(null);
+    setRemoteTitle(null);
+    setRemoteEssence(null);
     if (!bookId || Number.isNaN(order)) return;
     chaptersApi
       .getContent(bookId, order)
       .then((content) => {
-        if (alive) setRemoteBlocks(content?.blocks ?? null);
+        if (!alive) return;
+        setRemoteBlocks(content?.blocks ?? null);
+        setRemoteTitle(content?.title ?? null);
+        setRemoteEssence(content?.essence ?? null);
       })
       .catch(() => {
         /* keep bundled content on any error */
@@ -104,8 +111,12 @@ export default function ReaderPage(): JSX.Element {
   // Split content into the essence callout + the reflection body.
   // Admin-authored content (from the backend) takes precedence over bundled.
   const paras = remoteBlocks && remoteBlocks.length > 0 ? remoteBlocks : (chapter.content ?? []);
-  const essence = chapter.essence ?? paras[0];
-  const body = chapter.essence ? paras : paras.slice(1);
+  const displayTitle = remoteTitle ?? chapter.title;
+  const bundledEssence = chapter.essence;
+  const essence = remoteEssence ?? bundledEssence ?? paras[0];
+  // When there's a dedicated essence (bundled or override), the whole body is
+  // reflection; otherwise the first paragraph doubled as the essence.
+  const body = remoteEssence || bundledEssence ? paras : paras.slice(1);
   const firstParaIdx = body.findIndex((b) => blockType(b) === 'p');
 
   return (
@@ -126,7 +137,7 @@ export default function ReaderPage(): JSX.Element {
             Chapter {chapter.order}
           </p>
           <h1 className="truncate font-serif text-lg font-bold leading-tight text-ink">
-            {chapter.title}
+            {displayTitle}
           </h1>
         </div>
 
@@ -209,7 +220,7 @@ export default function ReaderPage(): JSX.Element {
             body.map((block, i) => <Block key={i} text={block} first={i === firstParaIdx} />)
           ) : (
             <p className="text-lg leading-[1.85] text-body first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-serif first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-gold-deep">
-              The distilled summary of <span className="italic">{chapter.title}</span> is being
+              The distilled summary of <span className="italic">{displayTitle}</span> is being
               prepared. Your progress for this chapter has been recorded.
             </p>
           )}
@@ -267,7 +278,7 @@ export default function ReaderPage(): JSX.Element {
       <FeedbackModal
         open={feedbackOpen}
         onClose={() => setFeedbackOpen(false)}
-        defaultSubject={`${book.title} — Chapter ${chapter.order}: ${chapter.title}`}
+        defaultSubject={`${book.title} — Chapter ${chapter.order}: ${displayTitle}`}
       />
 
       {/* admin: edit this chapter's content — saved content shows live */}
@@ -276,7 +287,11 @@ export default function ReaderPage(): JSX.Element {
           book={book}
           chapter={chapter}
           onClose={() => setEditOpen(false)}
-          onSaved={(blocks) => setRemoteBlocks(blocks)}
+          onSaved={(saved) => {
+            setRemoteBlocks(saved.blocks);
+            setRemoteTitle(saved.title ?? null);
+            setRemoteEssence(saved.essence ?? null);
+          }}
         />
       )}
     </div>
