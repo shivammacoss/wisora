@@ -73,7 +73,7 @@ export default function BookDetailPage(): JSX.Element {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-gold-deep">
-              {book.tradition}
+              {book.subtitle}
             </p>
             <h1 className="mt-1 font-serif text-4xl font-extrabold text-ink md:text-5xl">
               {book.title}
