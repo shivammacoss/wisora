@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, ChevronDown, Search, TrendingUp } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import { getBooks, type Book } from '@features/books';
 import { UserMenu } from '@shared/components/ui/UserMenu';
 import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
@@ -32,7 +32,6 @@ export default function LibraryPage(): JSX.Element {
   }, [allBooks, query, category]);
 
   const openBook = (slug: string): void => navigate(ROUTES.bookDetail(slug));
-  const popular = allBooks.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -104,34 +103,6 @@ export default function LibraryPage(): JSX.Element {
               ))}
             </div>
           )}
-        </section>
-
-        {/* ── Popular reads ── */}
-        <section className="overflow-hidden rounded-3xl border border-hairline bg-gradient-to-br from-surface via-surface to-cream/40 p-6 shadow-sm sm:p-8">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="flex items-center gap-2.5 font-serif text-2xl font-bold text-ink">
-                <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-gold/20 to-gold/5">
-                  <TrendingUp className="h-5 w-5 text-gold-deep" />
-                </span>
-                Popular reads
-              </h2>
-              <p className="mt-1 text-sm text-muted">Most-read scriptures across the Wisora community.</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => navigate(ROUTES.library)}
-              className="hidden shrink-0 items-center gap-1 text-sm font-semibold text-gold-deep transition-all hover:gap-2 sm:inline-flex"
-            >
-              View all <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {popular.map((b, i) => (
-              <MyBookCard key={b.slug} book={b} rank={i + 1} onRead={() => openBook(b.slug)} />
-            ))}
-          </div>
         </section>
       </main>
     </div>
