@@ -29,13 +29,15 @@ async function refreshAccessToken(): Promise<string | null> {
   const tokens = tokenStorage.get();
   if (!tokens?.refreshToken) return null;
   try {
-    const { data } = await axios.post<ApiEnvelope<{ accessToken: string; refreshToken: string }>>(
-      `${config.apiBaseUrl}/auth/refresh`,
-      { refreshToken: tokens.refreshToken },
-    );
-    if (data.data) {
-      tokenStorage.set(data.data);
-      return data.data.accessToken;
+    // The API returns { user, tokens: { accessToken, refreshToken } } — read the
+    // nested `tokens`, not the envelope root (that mismatch silently broke refresh).
+    const { data } = await axios.post<
+      ApiEnvelope<{ tokens: { accessToken: string; refreshToken: string } }>
+    >(`${config.apiBaseUrl}/auth/refresh`, { refreshToken: tokens.refreshToken });
+    const next = data.data?.tokens;
+    if (next?.accessToken && next?.refreshToken) {
+      tokenStorage.set(next);
+      return next.accessToken;
     }
     return null;
   } catch {
