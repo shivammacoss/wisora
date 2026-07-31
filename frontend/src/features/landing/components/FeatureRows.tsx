@@ -28,7 +28,7 @@ const ROWS: Row[] = [
     description:
       '₹1 per chapter. Pay in your local currency. Lifetime access — unlock once, read forever.',
     art: (
-      <img src={infoCard2} alt="Pay per chapter illustration" className="block w-full transition-transform duration-500 ease-out group-hover:scale-110" />
+      <img src={infoCard3} alt="Pay per chapter illustration" className="block w-full transition-transform duration-500 ease-out group-hover:scale-110" />
     ),
     reverse: true,
   },
@@ -37,7 +37,7 @@ const ROWS: Row[] = [
     description:
       'Bookmarks, progress, streaks, and a private reading library that syncs across devices.',
     art: (
-      <img src={infoCard3} alt="Track your journey illustration" className="block w-full transition-transform duration-500 ease-out group-hover:scale-110" />
+      <img src={infoCard2} alt="Track your journey illustration" className="block w-full transition-transform duration-500 ease-out group-hover:scale-110" />
     ),
     reverse: false,
   },
