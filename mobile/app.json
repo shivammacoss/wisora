@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Wisora",
+    "slug": "wisora",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.wisora.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#FBF6EC",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "eccb965a-e031-4c65-a495-1091b23dd089"
+      }
+    },
+    "owner": "shivam92388"
+  }
+}
