@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../theme';
+import { type Colors } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 
 /** Render **bold** / *italic* inline spans within a block. */
 function renderInline(text: string): React.ReactNode {
@@ -29,6 +30,8 @@ function renderInline(text: string): React.ReactNode {
  * Matches the web reader: headings, verse, transliteration, quotes, bullets.
  */
 export function ContentBlocks({ blocks }: { blocks: string[] }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   return (
     <View>
       {blocks.map((raw, i) => {
@@ -59,7 +62,7 @@ export function ContentBlocks({ blocks }: { blocks: string[] }): React.ReactElem
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: colors.hairline,

@@ -16,7 +16,8 @@ import { adminApi, type AdminFeedback, type AdminPayment, type AdminUser } from 
 import { getBooks } from '../data/books';
 import { useAuth } from '../auth/AuthContext';
 import type { ScreenProps } from '../navigation';
-import { colors, radius } from '../theme';
+import { radius, type Colors } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 
 type Section = 'overview' | 'users' | 'payments' | 'feedback' | 'books';
 
@@ -31,6 +32,8 @@ const NAV: { key: Section; label: string; icon: keyof typeof Feather.glyphMap }[
 const CURRENCY_SYMBOL: Record<string, string> = { INR: '₹', USD: '$', EUR: '€' };
 
 export default function AdminScreen({ navigation }: ScreenProps<'Admin'>): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { user, logout } = useAuth();
   const [section, setSection] = useState<Section>('overview');
 
@@ -125,6 +128,8 @@ function StateWrap({
   empty?: boolean;
   children: React.ReactNode;
 }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   if (loading)
     return (
       <View style={styles.center}>
@@ -139,6 +144,8 @@ function StateWrap({
 /* ───────── Overview ───────── */
 
 function OverviewSection({ onGo }: { onGo: (s: Section) => void }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const users = useFetch(adminApi.users.list);
   const feedback = useFetch(adminApi.feedback.list);
   const payments = useFetch(adminApi.payments.history);
@@ -184,6 +191,8 @@ function OverviewSection({ onGo }: { onGo: (s: Section) => void }): React.ReactE
 /* ───────── Users ───────── */
 
 function UsersSection({ currentAdminId }: { currentAdminId?: string }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { data, loading, error, reload } = useFetch(adminApi.users.list);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -268,6 +277,8 @@ function UsersSection({ currentAdminId }: { currentAdminId?: string }): React.Re
 /* ───────── Payments ───────── */
 
 function PaymentsSection(): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { data, loading, error } = useFetch(adminApi.payments.history);
   return (
     <StateWrap loading={loading} error={error} empty={data?.length === 0}>
@@ -315,6 +326,8 @@ function PaymentsSection(): React.ReactElement {
 /* ───────── Feedback ───────── */
 
 function FeedbackSection(): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { data, loading, error, reload } = useFetch(adminApi.feedback.list);
   return (
     <StateWrap loading={loading} error={error} empty={data?.length === 0}>
@@ -329,6 +342,8 @@ function FeedbackSection(): React.ReactElement {
 }
 
 function FeedbackCard({ item, onReplied }: { item: AdminFeedback; onReplied: () => void }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const [reply, setReply] = useState('');
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -396,6 +411,8 @@ function FeedbackCard({ item, onReplied }: { item: AdminFeedback; onReplied: () 
 /* ───────── Books ───────── */
 
 function BooksSection(): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const books = getBooks();
   return (
     <FlatList
@@ -418,7 +435,7 @@ function BooksSection(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.cream },
   header: {
     flexDirection: 'row',

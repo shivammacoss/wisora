@@ -14,9 +14,12 @@ import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../auth/AuthContext';
 import type { ScreenProps } from '../navigation';
-import { colors, radius } from '../theme';
+import { radius, type Colors } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function LoginScreen({ navigation }: ScreenProps<'Login'>): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { login, register, continueAsGuest } = useAuth();
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [name, setName] = useState('');
@@ -117,6 +120,8 @@ function Tab({
   active: boolean;
   onPress: () => void;
 }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   return (
     <Pressable style={[styles.tab, active && styles.tabActive]} onPress={onPress}>
       <Text style={[styles.tabText, active && styles.tabTextActive]}>{label}</Text>
@@ -139,6 +144,8 @@ function Field({
   secure?: boolean;
   keyboardType?: 'email-address' | 'default';
 }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   return (
     <View style={{ marginTop: 14 }}>
       <Text style={styles.fieldLabel}>{label}</Text>
@@ -157,7 +164,7 @@ function Field({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.cream },
   back: { position: 'absolute', top: 12, left: 16, zIndex: 10, padding: 6 },
   scroll: { padding: 24, paddingTop: 8, flexGrow: 1, justifyContent: 'center' },

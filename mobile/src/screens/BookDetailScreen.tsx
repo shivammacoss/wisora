@@ -5,12 +5,17 @@ import { getBookBySlug } from '../data/books';
 import type { Chapter } from '../types';
 import type { ScreenProps } from '../navigation';
 import { TraditionIcon } from '../components/TraditionIcon';
-import { colors, radius } from '../theme';
+import { useCurrency } from '../currency/CurrencyContext';
+import { radius, SERIF, type Colors } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function BookDetailScreen({
   route,
   navigation,
 }: ScreenProps<'BookDetail'>): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
+  const { currency } = useCurrency();
   const book = getBookBySlug(route.params.slug);
 
   if (!book) {
@@ -43,6 +48,7 @@ export default function BookDetailScreen({
         renderItem={({ item }) => (
           <ChapterRow
             chapter={item}
+            priceLabel={`${currency.symbol}1`}
             onPress={() => navigation.navigate('Reader', { slug: book.slug, order: item.order })}
           />
         )}
@@ -53,11 +59,15 @@ export default function BookDetailScreen({
 
 function ChapterRow({
   chapter,
+  priceLabel,
   onPress,
 }: {
   chapter: Chapter;
+  priceLabel: string;
   onPress: () => void;
 }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
       <View style={styles.badge}>
@@ -75,14 +85,14 @@ function ChapterRow({
         </View>
       ) : (
         <View style={styles.lockPill}>
-          <Text style={styles.lockText}>🔒 ₹1</Text>
+          <Text style={styles.lockText}>🔒 {priceLabel}</Text>
         </View>
       )}
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.cream },
   list: { padding: 16, paddingBottom: 32 },
   missing: { padding: 24, color: colors.body },
@@ -105,7 +115,7 @@ const styles = StyleSheet.create({
     color: colors.goldDeep,
     marginTop: 16,
   },
-  title: { fontSize: 30, fontWeight: '800', color: colors.ink, marginTop: 4 },
+  title: { fontFamily: SERIF, fontSize: 32, fontWeight: '700', color: colors.ink, marginTop: 4 },
   desc: { fontSize: 15, lineHeight: 23, color: colors.body, marginTop: 10 },
   section: { fontSize: 20, fontWeight: '800', color: colors.ink, marginTop: 24 },
   count: { fontSize: 15, fontWeight: '400', color: colors.muted },

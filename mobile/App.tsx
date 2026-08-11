@@ -1,6 +1,6 @@
 import { ActivityIndicator, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomeScreen from './src/screens/HomeScreen';
@@ -10,25 +10,27 @@ import BookDetailScreen from './src/screens/BookDetailScreen';
 import ReaderScreen from './src/screens/ReaderScreen';
 import AdminScreen from './src/screens/AdminScreen';
 import { AuthProvider, useAuth } from './src/auth/AuthContext';
+import { CurrencyProvider } from './src/currency/CurrencyContext';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import type { RootStackParamList } from './src/navigation';
-import { colors } from './src/theme';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const navTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: colors.cream,
-    primary: colors.gold,
-    card: colors.cream,
-    text: colors.ink,
-    border: colors.hairline,
-  },
-};
-
 function RootNav() {
   const { user, ready } = useAuth();
+  const { colors, isDark } = useTheme();
+
+  const navTheme = {
+    ...(isDark ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(isDark ? DarkTheme : DefaultTheme).colors,
+      background: colors.cream,
+      primary: colors.gold,
+      card: colors.cream,
+      text: colors.ink,
+      border: colors.hairline,
+    },
+  };
 
   if (!ready) {
     return (
@@ -40,8 +42,9 @@ function RootNav() {
 
   return (
     <NavigationContainer theme={navTheme}>
-      <StatusBar style="dark" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       <Stack.Navigator
+        initialRouteName={user?.role === 'admin' ? 'Admin' : undefined}
         screenOptions={{
           headerStyle: { backgroundColor: colors.cream },
           headerTintColor: colors.ink,
@@ -71,9 +74,13 @@ function RootNav() {
 export default function App() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <RootNav />
-      </AuthProvider>
+      <ThemeProvider>
+        <CurrencyProvider>
+          <AuthProvider>
+            <RootNav />
+          </AuthProvider>
+        </CurrencyProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }

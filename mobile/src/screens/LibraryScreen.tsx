@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
   Alert,
+  Dimensions,
   FlatList,
   ImageBackground,
   Modal,
@@ -17,11 +18,16 @@ import type { Book } from '../types';
 import type { ScreenProps } from '../navigation';
 import { TraditionIcon } from '../components/TraditionIcon';
 import { useAuth } from '../auth/AuthContext';
-import { colors, radius } from '../theme';
+import { radius, SERIF, type Colors } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 
-const banner = require('../../assets/banner.png');
+const banner = require('../../assets/banner3.png');
+const BANNER_W = Dimensions.get('window').width - 32; // list has 16px padding each side
+const BANNER_H = Math.round(BANNER_W / 3.559); // banner3.png native ratio (1936x544)
 
 export default function LibraryScreen({ navigation }: ScreenProps<'Library'>): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { user, logout } = useAuth();
   const allBooks = getBooks();
   const [query, setQuery] = useState('');
@@ -130,11 +136,14 @@ export default function LibraryScreen({ navigation }: ScreenProps<'Library'>): R
 }
 
 function BookCard({ book, onPress }: { book: Book; onPress: () => void }): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
       <View style={styles.glow} />
       <TraditionIcon tradition={book.tradition} size={30} />
-      <Text style={styles.from}>FROM {book.title.toUpperCase()}</Text>
+      <Text style={styles.fromLabel}>FROM</Text>
+      <Text style={styles.fromTitle}>{book.title}</Text>
       <Text style={styles.subtitle}>{book.subtitle}</Text>
       <Text style={styles.metaMain}>
         {book.chapters.length} {book.unit}
@@ -144,7 +153,7 @@ function BookCard({ book, onPress }: { book: Book; onPress: () => void }): React
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: Colors) => StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.cream },
   topbar: {
     flexDirection: 'row',
@@ -179,11 +188,11 @@ const styles = StyleSheet.create({
   },
   avatarText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   list: { padding: 16, paddingBottom: 32 },
-  banner: { height: 150, borderRadius: radius.lg, overflow: 'hidden', justifyContent: 'center' },
+  banner: { width: BANNER_W, height: BANNER_H, borderRadius: radius.lg, overflow: 'hidden', justifyContent: 'center' },
   bannerImg: { borderRadius: radius.lg },
-  bannerText: { width: '52%', paddingLeft: 18 },
-  bannerTitle: { fontSize: 22, fontWeight: '800', color: '#1A1A1A', lineHeight: 26 },
-  bannerSub: { fontSize: 13, color: '#1A1A1A', opacity: 0.7, marginTop: 4 },
+  bannerText: { width: '46%', paddingLeft: 16 },
+  bannerTitle: { fontFamily: SERIF, fontSize: 18, fontWeight: '700', color: '#1A1A1A', lineHeight: 22 },
+  bannerSub: { fontSize: 11, color: '#1A1A1A', opacity: 0.7, marginTop: 3 },
   sectionHead: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -191,7 +200,7 @@ const styles = StyleSheet.create({
     marginTop: 22,
     marginBottom: 4,
   },
-  sectionTitle: { fontSize: 22, fontWeight: '800', color: colors.ink },
+  sectionTitle: { fontFamily: SERIF, fontSize: 24, fontWeight: '700', color: colors.ink },
   catPill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -229,8 +238,9 @@ const styles = StyleSheet.create({
     borderRadius: 65,
     backgroundColor: colors.gold + '18',
   },
-  from: { fontSize: 10, fontWeight: '700', letterSpacing: 1.6, color: colors.muted, marginTop: 22 },
-  subtitle: { fontSize: 25, fontWeight: '800', color: colors.gold, marginTop: 4 },
+  fromLabel: { fontSize: 10, fontWeight: '700', letterSpacing: 2, color: colors.muted, marginTop: 22 },
+  fromTitle: { fontSize: 13, fontWeight: '600', color: colors.goldDeep, marginTop: 3 },
+  subtitle: { fontFamily: SERIF, fontSize: 26, fontWeight: '700', color: colors.gold, marginTop: 6 },
   metaMain: { fontSize: 14, fontWeight: '600', color: colors.ink, marginTop: 18 },
   metaSub: { fontSize: 12, color: colors.muted, marginTop: 2 },
   modalBackdrop: {
