@@ -171,7 +171,7 @@ export function ChapterManager({ book, onClose, onChanged }: ChapterManagerProps
           {error && <p className="px-6 pt-3 text-sm text-red-600">{error}</p>}
 
           {/* list */}
-          <div className="flex-1 overflow-y-auto px-6 py-3">
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-3">
             {loading ? (
               <p className="flex items-center justify-center gap-2 py-10 text-sm text-muted">
                 <Loader2 className="h-4 w-4 animate-spin" /> Loading chapters…
