@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getBookBySlug } from '../data/books';
 import type { Chapter } from '../types';
 import type { ScreenProps } from '../navigation';
 import { TraditionIcon } from '../components/TraditionIcon';
+import { ChapterManager } from '../components/ChapterManager';
+import { chaptersApi, type ManagedChapter } from '../api/chapters';
+import { useAuth } from '../auth/AuthContext';
 import { useCurrency } from '../currency/CurrencyContext';
 import { radius, SERIF, type Colors } from '../theme';
 import { useTheme } from '../theme/ThemeContext';
@@ -16,7 +20,30 @@ export default function BookDetailScreen({
   const { colors } = useTheme();
   const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { currency } = useCurrency();
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const book = getBookBySlug(route.params.slug);
+
+  // Backend-managed chapter list (null → use bundled). Kept in sync by the manager.
+  const [managed, setManaged] = useState<ManagedChapter[] | null>(null);
+  const [manageOpen, setManageOpen] = useState(false);
+
+  const slug = book?.slug;
+  useEffect(() => {
+    if (!slug) return;
+    let alive = true;
+    chaptersApi
+      .list(slug)
+      .then((list) => {
+        if (alive) setManaged(list.length > 0 ? list : null);
+      })
+      .catch(() => {
+        /* keep bundled on any error */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [slug]);
 
   if (!book) {
     return (
@@ -26,10 +53,21 @@ export default function BookDetailScreen({
     );
   }
 
+  // Chapters to show: the backend-managed list (mapped) or the bundled list.
+  const displayChapters: Chapter[] = managed
+    ? managed.map((m) => ({
+        order: m.order,
+        title: m.title,
+        readingTimeMins: m.readingTimeMins,
+        isFree: m.isFree,
+        essence: m.essence ?? undefined,
+      }))
+    : book.chapters;
+
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <FlatList
-        data={book.chapters}
+        data={displayChapters}
         keyExtractor={(c) => String(c.order)}
         contentContainerStyle={styles.list}
         ListHeaderComponent={
@@ -40,9 +78,17 @@ export default function BookDetailScreen({
             <Text style={styles.subtitle}>{book.subtitle.toUpperCase()}</Text>
             <Text style={styles.title}>{book.title}</Text>
             <Text style={styles.desc}>{book.description}</Text>
-            <Text style={styles.section}>
-              Chapters <Text style={styles.count}>({book.chapters.length})</Text>
-            </Text>
+            <View style={styles.sectionRow}>
+              <Text style={styles.section}>
+                Chapters <Text style={styles.count}>({displayChapters.length})</Text>
+              </Text>
+              {isAdmin && (
+                <Pressable style={styles.manageBtn} onPress={() => setManageOpen(true)}>
+                  <Feather name="list" size={15} color={colors.goldDeep} />
+                  <Text style={styles.manageBtnText}>Manage</Text>
+                </Pressable>
+              )}
+            </View>
           </View>
         }
         renderItem={({ item }) => (
@@ -53,6 +99,15 @@ export default function BookDetailScreen({
           />
         )}
       />
+
+      {isAdmin && (
+        <ChapterManager
+          book={book}
+          visible={manageOpen}
+          onClose={() => setManageOpen(false)}
+          onChanged={(list) => setManaged(list.length > 0 ? list : null)}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -117,8 +172,26 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   },
   title: { fontFamily: SERIF, fontSize: 32, fontWeight: '700', color: colors.ink, marginTop: 4 },
   desc: { fontSize: 15, lineHeight: 23, color: colors.body, marginTop: 10 },
-  section: { fontSize: 20, fontWeight: '800', color: colors.ink, marginTop: 24 },
+  sectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 24,
+  },
+  section: { fontSize: 20, fontWeight: '800', color: colors.ink },
   count: { fontSize: 15, fontWeight: '400', color: colors.muted },
+  manageBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderColor: colors.gold + '55',
+    backgroundColor: colors.gold + '14',
+    borderRadius: radius.full,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  manageBtnText: { fontSize: 13, fontWeight: '700', color: colors.goldDeep },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
