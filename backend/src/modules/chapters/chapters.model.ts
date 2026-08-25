@@ -13,6 +13,11 @@ export interface ChapterContentDocument extends Document {
   /** Optional admin override for the "Essence" callout (falls back to bundled). */
   essence?: string;
   blocks: string[];
+  /** Chapter-list metadata (present once a book's list is backend-managed). */
+  readingTimeMins?: number;
+  isFree?: boolean;
+  /** Marks a record as part of the authoritative backend chapter list. */
+  managed?: boolean;
   updatedBy?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -25,6 +30,10 @@ const chapterContentSchema = new Schema<ChapterContentDocument>(
     title: { type: String, trim: true },
     essence: { type: String, trim: true },
     blocks: { type: [String], default: [] },
+    readingTimeMins: { type: Number, default: 5 },
+    isFree: { type: Boolean, default: false },
+    // true = this row is part of the book's managed chapter list (add/delete/reorder).
+    managed: { type: Boolean, default: false, index: true },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },
   {

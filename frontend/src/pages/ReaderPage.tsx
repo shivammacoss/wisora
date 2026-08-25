@@ -14,10 +14,10 @@ import {
   PencilLine,
   Sun,
 } from 'lucide-react';
-import { getBookBySlug } from '@features/books';
+import { getBookBySlug, type Chapter } from '@features/books';
 import { chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
 import { FeedbackModal } from '@features/feedback';
-import { chaptersApi, ChapterContentEditor } from '@features/chapters';
+import { chaptersApi, ChapterContentEditor, type ManagedChapter } from '@features/chapters';
 import { ROUTES } from '@shared/constants';
 import { cn } from '@shared/utils/cn';
 
@@ -48,10 +48,23 @@ export default function ReaderPage(): JSX.Element {
   const [remoteBlocks, setRemoteBlocks] = useState<string[] | null>(null);
   const [remoteTitle, setRemoteTitle] = useState<string | null>(null);
   const [remoteEssence, setRemoteEssence] = useState<string | null>(null);
+  // Backend-managed chapter list (null → use bundled) + whether it has loaded.
+  const [managed, setManaged] = useState<ManagedChapter[] | null>(null);
+  const [listLoaded, setListLoaded] = useState(false);
 
   const book = getBookBySlug(bookId);
   const order = Number(chapterId);
-  const chapter = book?.chapters.find((c) => c.order === order);
+  // Effective chapter list: backend-managed (mapped) or bundled.
+  const chapters: Chapter[] = managed
+    ? managed.map((m) => ({
+        order: m.order,
+        title: m.title,
+        readingTimeMins: m.readingTimeMins,
+        isFree: m.isFree,
+        essence: m.essence ?? undefined,
+      }))
+    : (book?.chapters ?? []);
+  const chapter = chapters.find((c) => c.order === order);
 
   const accessible =
     book && chapter
@@ -89,12 +102,46 @@ export default function ReaderPage(): JSX.Element {
     };
   }, [bookId, order]);
 
-  // Missing data → back to library. Locked chapter → back to the book's paywall.
-  if (!book || !chapter) return <Navigate to={ROUTES.library} replace />;
+  // Load the backend-managed chapter list (so added / reordered chapters resolve).
+  useEffect(() => {
+    if (!bookId) {
+      setListLoaded(true);
+      return;
+    }
+    let alive = true;
+    chaptersApi
+      .list(bookId)
+      .then((list) => {
+        if (alive) setManaged(list.length > 0 ? list : null);
+      })
+      .catch(() => {
+        /* bundled fallback */
+      })
+      .finally(() => {
+        if (alive) setListLoaded(true);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [bookId]);
+
+  // No such book → library.
+  if (!book) return <Navigate to={ROUTES.library} replace />;
+  // Chapter not found: wait while the managed list is still loading, else bounce.
+  if (!chapter) {
+    if (!listLoaded) {
+      return (
+        <div className="flex min-h-screen items-center justify-center bg-cream text-sm text-muted">
+          Loading…
+        </div>
+      );
+    }
+    return <Navigate to={ROUTES.bookDetail(book.slug)} replace />;
+  }
   if (!accessible) return <Navigate to={ROUTES.bookDetail(book.slug)} replace />;
 
-  const prev = book.chapters.find((c) => c.order === order - 1);
-  const next = book.chapters.find((c) => c.order === order + 1);
+  const prev = chapters.find((c) => c.order === order - 1);
+  const next = chapters.find((c) => c.order === order + 1);
   const nextAccessible = next
     ? isAdmin || chapterUnlocked(unlocked, book.slug, next.order, next.isFree)
     : false;

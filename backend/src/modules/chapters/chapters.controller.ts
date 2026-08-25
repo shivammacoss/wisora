@@ -26,4 +26,37 @@ export class ChaptersController {
     );
     return ApiResponse.success(res, saved);
   }
+
+  /* ── managed chapter list ── */
+
+  /** Public: the backend-managed chapter list for a book (empty if unmanaged). */
+  static async list(req: Request, res: Response): Promise<Response> {
+    const items = await service.listManaged(req.params.bookSlug);
+    return ApiResponse.success(res, items);
+  }
+
+  /** Admin: seed the list from the bundled chapters (once per book). */
+  static async init(req: Request, res: Response): Promise<Response> {
+    const items = await service.initFromBundled(req.params.bookSlug, req.body.chapters);
+    return ApiResponse.success(res, items);
+  }
+
+  /** Admin: add a new chapter at the end. */
+  static async add(req: Request, res: Response): Promise<Response> {
+    const { title, readingTimeMins, isFree } = req.body;
+    const created = await service.addChapter(req.params.bookSlug, { title, readingTimeMins, isFree });
+    return ApiResponse.created(res, created);
+  }
+
+  /** Admin: delete a chapter (and close the gap). */
+  static async remove(req: Request, res: Response): Promise<Response> {
+    const items = await service.deleteChapter(req.params.bookSlug, Number(req.params.chapterOrder));
+    return ApiResponse.success(res, items);
+  }
+
+  /** Admin: reorder the chapter list. */
+  static async reorder(req: Request, res: Response): Promise<Response> {
+    const items = await service.reorder(req.params.bookSlug, req.body.order);
+    return ApiResponse.success(res, items);
+  }
 }

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ListOrdered } from 'lucide-react';
 import { getBookBySlug, type Chapter } from '@features/books';
 import { ChapterRow, PaywallModal } from '@features/book';
-import { ChapterContentEditor } from '@features/chapters';
+import { ChapterContentEditor, ChapterManager, chaptersApi, type ManagedChapter } from '@features/chapters';
 import { useChapterCheckout } from '@features/payments';
 import { CurrencySelector } from '@features/landing/components/ui/CurrencySelector';
 import { chapterUnlocked, useAuthStore, useCurrencyStore, useLibraryStore, toPaymentCurrency } from '@app/store';
@@ -27,6 +28,26 @@ export default function BookDetailPage(): JSX.Element {
 
   const [paywallChapter, setPaywallChapter] = useState<Chapter | null>(null);
   const [editChapter, setEditChapter] = useState<Chapter | null>(null);
+  // Backend-managed chapter list (null → use bundled). Kept in sync by the manager.
+  const [managed, setManaged] = useState<ManagedChapter[] | null>(null);
+  const [manageOpen, setManageOpen] = useState(false);
+
+  // Prefer the backend-managed list when a book has one; otherwise bundled.
+  useEffect(() => {
+    if (!bookId) return;
+    let alive = true;
+    chaptersApi
+      .list(bookId)
+      .then((list) => {
+        if (alive && list.length > 0) setManaged(list);
+      })
+      .catch(() => {
+        /* backend unreachable → bundled fallback */
+      });
+    return () => {
+      alive = false;
+    };
+  }, [bookId]);
 
   // Grant access after a confirmed payment (real or demo), then open the reader.
   // Declared before the early return below to satisfy the Rules of Hooks.
@@ -55,6 +76,17 @@ export default function BookDetailPage(): JSX.Element {
 
   const openReader = (chapter: Chapter): void =>
     navigate(ROUTES.reader(book.slug, String(chapter.order)));
+
+  // Chapters to show: the backend-managed list (mapped) or the bundled list.
+  const displayChapters: Chapter[] = managed
+    ? managed.map((m) => ({
+        order: m.order,
+        title: m.title,
+        readingTimeMins: m.readingTimeMins,
+        isFree: m.isFree,
+        essence: m.essence ?? undefined,
+      }))
+    : book.chapters;
 
   return (
     <div className="min-h-screen bg-cream">
@@ -86,13 +118,24 @@ export default function BookDetailPage(): JSX.Element {
         {/* chapters */}
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
           <h2 className="font-serif text-2xl font-bold text-ink">
-            Chapters <span className="text-base font-normal text-muted">({book.chapters.length})</span>
+            Chapters <span className="text-base font-normal text-muted">({displayChapters.length})</span>
           </h2>
-          <CurrencySelector value={currency} onChange={setCurrency} />
+          <div className="flex items-center gap-3">
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => setManageOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-cream-surface px-4 py-2 text-sm font-semibold text-gold-deep transition-colors hover:border-gold/50 hover:bg-gold/10"
+              >
+                <ListOrdered className="h-4 w-4" /> Manage chapters
+              </button>
+            )}
+            <CurrencySelector value={currency} onChange={setCurrency} />
+          </div>
         </div>
 
         <ul className="mt-6 flex flex-col gap-3">
-          {book.chapters.map((chapter) => {
+          {displayChapters.map((chapter) => {
             const isUnlocked =
               isAdmin || chapterUnlocked(unlocked, book.slug, chapter.order, chapter.isFree);
             return (
@@ -134,6 +177,15 @@ export default function BookDetailPage(): JSX.Element {
           book={book}
           chapter={editChapter}
           onClose={() => setEditChapter(null)}
+        />
+      )}
+
+      {/* admin: chapter list manager (add / delete / reorder) */}
+      {manageOpen && (
+        <ChapterManager
+          book={book}
+          onClose={() => setManageOpen(false)}
+          onChanged={(list) => setManaged(list)}
         />
       )}
     </div>
