@@ -3,6 +3,20 @@ import type { Chapter } from '../types';
 /** The Bhagavad Gita — authored content synced from the live backend (matches web). */
 export const gitaChapters: Chapter[] = [
   {
+    order: 0,
+    title: 'Introduction to the Bhagavad Gita',
+    readingTimeMins: 4,
+    isFree: true,
+    essence:
+      'A 700-verse dialogue between the warrior Arjuna and Krishna on a battlefield — the Gita distils the whole of Indian spiritual thought into a practical guide for living.',
+    content: [
+      'The Bhagavad Gita — “the Song of God” — is one of the most beloved and influential spiritual texts in human history. Composed roughly 2,500 years ago in Sanskrit, it sits within the sixth book of the great Indian epic, the Mahabharata.',
+      'It is not a lecture or a set of commandments, but a living conversation. On the eve of a devastating war, the warrior Arjuna is overcome by doubt and despair. His charioteer — revealed to be Krishna, the Divine itself — answers his crisis with a teaching that ranges across duty, devotion, knowledge, and the nature of the eternal self.',
+      'What makes the Gita timeless is its universality. It never asks the reader to belong to any sect. It speaks to the questions every human eventually faces: Why should I act? What is my true duty? How do I find peace when life feels overwhelming? What, if anything, survives death?',
+      'Across its eighteen short chapters, Krishna weaves philosophy, psychology, and ethics into a single vision — one that has guided seekers from Adi Shankara to Gandhi, and still speaks, chapter by chapter, to anyone willing to listen.',
+    ],
+  },
+  {
     order: 1,
     title: "Arjuna's Despair - अर्जुनविषादयोग |Arjuna Viṣāda Yoga",
     readingTimeMins: 9,

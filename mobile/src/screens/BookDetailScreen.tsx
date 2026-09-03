@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getBookBySlug } from '../data/books';
+import { getBookBySlug, splitIntro } from '../data/books';
 import type { Chapter } from '../types';
 import type { ScreenProps } from '../navigation';
 import { TraditionIcon } from '../components/TraditionIcon';
@@ -64,10 +64,13 @@ export default function BookDetailScreen({
       }))
     : book.chapters;
 
+  // Separate the introduction (shown on its own) from the numbered chapters.
+  const { intro, rest } = splitIntro(displayChapters);
+
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <FlatList
-        data={displayChapters}
+        data={rest}
         keyExtractor={(c) => String(c.order)}
         contentContainerStyle={styles.list}
         ListHeaderComponent={
@@ -78,9 +81,29 @@ export default function BookDetailScreen({
             <Text style={styles.subtitle}>{book.subtitle.toUpperCase()}</Text>
             <Text style={styles.title}>{book.title}</Text>
             <Text style={styles.desc}>{book.description}</Text>
+
+            {/* introduction — shown on its own, before the numbered chapters */}
+            {intro && (
+              <Pressable
+                style={styles.introCard}
+                onPress={() => navigation.navigate('Reader', { slug: book.slug, order: intro.order })}
+              >
+                <View style={styles.introIcon}>
+                  <Feather name="book-open" size={20} color={colors.goldDeep} />
+                </View>
+                <View style={{ flex: 1, minWidth: 0 }}>
+                  <Text style={styles.introKicker}>START HERE</Text>
+                  <Text style={styles.introTitle}>Introduction</Text>
+                </View>
+                <View style={styles.freePill}>
+                  <Text style={styles.freeText}>Free</Text>
+                </View>
+              </Pressable>
+            )}
+
             <View style={styles.sectionRow}>
               <Text style={styles.section}>
-                Chapters <Text style={styles.count}>({displayChapters.length})</Text>
+                Chapters <Text style={styles.count}>({rest.length})</Text>
               </Text>
               {isAdmin && (
                 <Pressable style={styles.manageBtn} onPress={() => setManageOpen(true)}>
@@ -91,9 +114,11 @@ export default function BookDetailScreen({
             </View>
           </View>
         }
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <ChapterRow
             chapter={item}
+            displayNumber={index + 1}
+            free={index === 0 || item.isFree}
             priceLabel={`${currency.symbol}1`}
             onPress={() => navigation.navigate('Reader', { slug: book.slug, order: item.order })}
           />
@@ -114,10 +139,14 @@ export default function BookDetailScreen({
 
 function ChapterRow({
   chapter,
+  displayNumber,
+  free,
   priceLabel,
   onPress,
 }: {
   chapter: Chapter;
+  displayNumber: number;
+  free: boolean;
   priceLabel: string;
   onPress: () => void;
 }): React.ReactElement {
@@ -126,7 +155,7 @@ function ChapterRow({
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}>
       <View style={styles.badge}>
-        <Text style={styles.badgeText}>{chapter.order}</Text>
+        <Text style={styles.badgeText}>{displayNumber}</Text>
       </View>
       <View style={styles.rowBody}>
         <Text style={styles.rowTitle} numberOfLines={1}>
@@ -134,7 +163,7 @@ function ChapterRow({
         </Text>
         <Text style={styles.rowMeta}>{chapter.readingTimeMins} min read</Text>
       </View>
-      {chapter.isFree ? (
+      {free ? (
         <View style={styles.freePill}>
           <Text style={styles.freeText}>Free</Text>
         </View>
@@ -172,6 +201,27 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   },
   title: { fontFamily: SERIF, fontSize: 32, fontWeight: '700', color: colors.ink, marginTop: 4 },
   desc: { fontSize: 15, lineHeight: 23, color: colors.body, marginTop: 10 },
+  introCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderWidth: 1,
+    borderColor: colors.gold + '4D',
+    backgroundColor: colors.gold + '14',
+    borderRadius: radius.lg,
+    padding: 14,
+    marginTop: 22,
+  },
+  introIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.gold + '26',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  introKicker: { fontSize: 10, fontWeight: '700', letterSpacing: 1.5, color: colors.goldDeep },
+  introTitle: { fontFamily: SERIF, fontSize: 18, fontWeight: '700', color: colors.ink, marginTop: 2 },
   sectionRow: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -13,7 +13,7 @@ import {
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getBookBySlug } from '../data/books';
+import { getBookBySlug, splitIntro, isIntroChapter } from '../data/books';
 import { fetchChapterOverride } from '../api';
 import { submitFeedback } from '../api/feedback';
 import { ContentBlocks } from '../components/ContentBlocks';
@@ -92,7 +92,12 @@ export default function ReaderScreen({
 
   const prev = book.chapters.find((c) => c.order === order - 1);
   const next = book.chapters.find((c) => c.order === order + 1);
-  const subject = `${book.title} — Chapter ${chapter.order}: ${view.title}`;
+  // Header label: "Introduction" for the intro, else the renumbered chapter no.
+  const { rest } = splitIntro(book.chapters);
+  const isIntro = isIntroChapter(chapter);
+  const displayNumber = rest.findIndex((c) => c.order === chapter.order) + 1;
+  const chapterLabel = isIntro ? 'Introduction' : `Chapter ${displayNumber}`;
+  const subject = `${book.title} — ${chapterLabel}: ${view.title}`;
 
   const openFeedback = (): void => {
     if (isGuest) {
@@ -106,7 +111,7 @@ export default function ReaderScreen({
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.kicker}>
-          {book.title.toUpperCase()} · CHAPTER {chapter.order}
+          {book.title.toUpperCase()} · {chapterLabel.toUpperCase()}
         </Text>
         <Text style={styles.title}>{view.title}</Text>
         <Text style={styles.readtime}>{chapter.readingTimeMins} min read</Text>
