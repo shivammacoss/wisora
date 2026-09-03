@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -104,6 +104,28 @@ export default function ProfileScreen({ navigation }: ScreenProps<'Profile'>): R
           <CurrencySelector value={currency} onChange={setCurrency} />
         </View>
 
+        {/* legal */}
+        <Text style={styles.sectionLabel}>LEGAL</Text>
+        <View style={styles.legalCard}>
+          <Pressable
+            style={styles.legalRow}
+            onPress={() => void Linking.openURL('https://wisora.org/privacy-policy').catch(() => undefined)}
+          >
+            <Feather name="shield" size={16} color={colors.goldDeep} />
+            <Text style={styles.legalText}>Privacy Policy</Text>
+            <Feather name="external-link" size={15} color={colors.muted} />
+          </Pressable>
+          <View style={styles.legalDivider} />
+          <Pressable
+            style={styles.legalRow}
+            onPress={() => void Linking.openURL('https://wisora.org/terms-of-service').catch(() => undefined)}
+          >
+            <Feather name="file-text" size={16} color={colors.goldDeep} />
+            <Text style={styles.legalText}>Terms of Service</Text>
+            <Feather name="external-link" size={15} color={colors.muted} />
+          </Pressable>
+        </View>
+
         {/* actions */}
         <Pressable style={styles.primaryBtn} onPress={() => navigation.navigate('Library')}>
           <Feather name="book-open" size={16} color="#fff" />
@@ -182,6 +204,16 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   statLabel: { fontSize: 12, color: colors.muted, marginTop: 1 },
   sectionLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1, color: colors.muted, marginTop: 24, marginBottom: 10 },
   currencyRow: { flexDirection: 'row' },
+  legalCard: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+  },
+  legalRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 14 },
+  legalText: { flex: 1, fontSize: 15, fontWeight: '600', color: colors.ink },
+  legalDivider: { height: 1, backgroundColor: colors.hairline, marginLeft: 16 },
   primaryBtn: {
     flexDirection: 'row',
     alignItems: 'center',
