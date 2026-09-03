@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore, useThemeStore } from '@app/store';
 import { AuthModal } from '@features/auth';
 import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
@@ -79,9 +79,18 @@ export default function LoginPage(): JSX.Element {
         <FinalCTA onContinueGuest={enterAsGuest} onMagicLink={enterWithMagicLink} />
       </main>
 
-      {/* Closing tagline — the page ends here (no footer). */}
-      <p className="mx-auto max-w-xl px-6 pb-16 text-center text-sm leading-relaxed text-muted">
+      {/* Closing tagline + legal links */}
+      <p className="mx-auto max-w-xl px-6 pt-4 text-center text-sm leading-relaxed text-muted">
         Ancient wisdom accessible, chapter by chapter, in a simple, gentle, and affordable way.
+      </p>
+      <p className="px-6 pb-16 pt-4 text-center text-xs text-muted">
+        <Link to={ROUTES.privacyPolicy} className="hover:text-gold-deep hover:underline">
+          Privacy Policy
+        </Link>{' '}
+        ·{' '}
+        <Link to={ROUTES.terms} className="hover:text-gold-deep hover:underline">
+          Terms of Service
+        </Link>
       </p>
 
       {/* Sign-up / login popup */}

@@ -3,6 +3,8 @@ export const ROUTES = {
   home: '/', // login / landing
   login: '/', // alias — the home page is the login gate
   resetPassword: '/reset-password',
+  privacyPolicy: '/privacy-policy',
+  terms: '/terms-of-service',
   library: '/library',
   bookDetail: (bookId = ':bookId') => `/book/${bookId}`,
   reader: (bookId = ':bookId', chapterId = ':chapterId') => `/book/${bookId}/chapter/${chapterId}`,
