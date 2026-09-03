@@ -8,7 +8,7 @@ export const chapterParamsSchema = z.object({
     .min(1)
     .max(120)
     .regex(/^[a-z0-9-]+$/i, 'Invalid book slug'),
-  chapterOrder: z.coerce.number().int().positive().max(1000),
+  chapterOrder: z.coerce.number().int().min(0).max(1000),
 });
 
 /** Body: the authored content — blocks plus optional title / essence overrides. */
@@ -33,7 +33,7 @@ export const initChaptersSchema = z.object({
   chapters: z
     .array(
       z.object({
-        order: z.coerce.number().int().positive().max(1000),
+        order: z.coerce.number().int().min(0).max(1000),
         title: z.string().trim().min(1).max(200),
         essence: z.string().trim().max(2000).optional(),
         readingTimeMins: z.coerce.number().int().min(1).max(600).optional(),

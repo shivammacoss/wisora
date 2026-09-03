@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ListOrdered } from 'lucide-react';
-import { getBookBySlug, type Chapter } from '@features/books';
+import { BookOpen, ListOrdered } from 'lucide-react';
+import { getBookBySlug, splitIntro, type Chapter } from '@features/books';
 import { ChapterRow, PaywallModal } from '@features/book';
 import { ChapterContentEditor, ChapterManager, chaptersApi, type ManagedChapter } from '@features/chapters';
 import { useChapterCheckout } from '@features/payments';
@@ -88,6 +88,9 @@ export default function BookDetailPage(): JSX.Element {
       }))
     : book.chapters;
 
+  // Separate the introduction (shown on its own) from the numbered chapters.
+  const { intro, rest } = splitIntro(displayChapters);
+
   return (
     <div className="min-h-screen bg-cream">
       <AppHeader showBack />
@@ -115,10 +118,32 @@ export default function BookDetailPage(): JSX.Element {
 
         <p className="mt-5 max-w-2xl leading-relaxed text-body">{book.description}</p>
 
+        {/* introduction — shown on its own, before the numbered chapters */}
+        {intro && (
+          <button
+            type="button"
+            onClick={() => openReader(intro)}
+            className="mt-8 flex w-full items-center gap-4 rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/10 to-gold/[0.04] p-4 text-left shadow-soft transition-colors hover:border-gold/50"
+          >
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gold/15">
+              <BookOpen className="h-5 w-5 text-gold-deep" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold uppercase tracking-widest text-gold-deep">
+                Start here
+              </p>
+              <h3 className="truncate font-serif text-lg font-bold text-ink">Introduction</h3>
+            </div>
+            <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
+              Free
+            </span>
+          </button>
+        )}
+
         {/* chapters */}
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
           <h2 className="font-serif text-2xl font-bold text-ink">
-            Chapters <span className="text-base font-normal text-muted">({displayChapters.length})</span>
+            Chapters <span className="text-base font-normal text-muted">({rest.length})</span>
           </h2>
           <div className="flex items-center gap-3">
             {isAdmin && (
@@ -135,14 +160,18 @@ export default function BookDetailPage(): JSX.Element {
         </div>
 
         <ul className="mt-6 flex flex-col gap-3">
-          {displayChapters.map((chapter) => {
+          {rest.map((chapter, i) => {
+            // The first real chapter is free; the intro is free too (above).
             const isUnlocked =
-              isAdmin || chapterUnlocked(unlocked, book.slug, chapter.order, chapter.isFree);
+              isAdmin ||
+              i === 0 ||
+              chapterUnlocked(unlocked, book.slug, chapter.order, chapter.isFree);
             return (
               <ChapterRow
                 key={chapter.order}
                 book={book}
                 chapter={chapter}
+                displayNumber={i + 1}
                 unlocked={isUnlocked}
                 read={Boolean(read[`${book.slug}:${chapter.order}`])}
                 currencySymbol={currency.symbol}

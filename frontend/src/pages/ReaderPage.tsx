@@ -14,7 +14,7 @@ import {
   PencilLine,
   Sun,
 } from 'lucide-react';
-import { getBookBySlug, type Chapter } from '@features/books';
+import { getBookBySlug, isIntroChapter, splitIntro, type Chapter } from '@features/books';
 import { chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
 import { FeedbackModal } from '@features/feedback';
 import { chaptersApi, ChapterContentEditor, type ManagedChapter } from '@features/chapters';
@@ -66,9 +66,16 @@ export default function ReaderPage(): JSX.Element {
     : (book?.chapters ?? []);
   const chapter = chapters.find((c) => c.order === order);
 
+  // Introduction + first real chapter are free; the rest follow the paywall.
+  const { rest } = splitIntro(chapters);
+  const isIntro = chapter ? isIntroChapter(chapter) : false;
+  const isFirstReal = chapter ? rest[0]?.order === chapter.order : false;
   const accessible =
     book && chapter
-      ? isAdmin || chapterUnlocked(unlocked, book.slug, chapter.order, chapter.isFree)
+      ? isAdmin ||
+        isIntro ||
+        isFirstReal ||
+        chapterUnlocked(unlocked, book.slug, chapter.order, chapter.isFree)
       : false;
 
   // Record progress + reset per-chapter UI whenever the chapter changes.
@@ -142,6 +149,9 @@ export default function ReaderPage(): JSX.Element {
 
   const prev = chapters.find((c) => c.order === order - 1);
   const next = chapters.find((c) => c.order === order + 1);
+  // Header label: "Introduction" for the intro, else the renumbered chapter no.
+  const displayNumber = rest.findIndex((c) => c.order === chapter.order) + 1;
+  const chapterLabel = isIntro ? 'Introduction' : `Chapter ${displayNumber}`;
   const nextAccessible = next
     ? isAdmin || chapterUnlocked(unlocked, book.slug, next.order, next.isFree)
     : false;
@@ -181,7 +191,7 @@ export default function ReaderPage(): JSX.Element {
 
         <div className="min-w-0 flex-1 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
-            Chapter {chapter.order}
+            {chapterLabel}
           </p>
           <h1 className="truncate font-serif text-lg font-bold leading-tight text-ink">
             {displayTitle}

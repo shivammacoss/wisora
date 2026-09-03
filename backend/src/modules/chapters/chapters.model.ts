@@ -26,7 +26,7 @@ export interface ChapterContentDocument extends Document {
 const chapterContentSchema = new Schema<ChapterContentDocument>(
   {
     bookSlug: { type: String, required: true, trim: true, lowercase: true },
-    chapterOrder: { type: Number, required: true, min: 1 },
+    chapterOrder: { type: Number, required: true, min: 0 },
     title: { type: String, trim: true },
     essence: { type: String, trim: true },
     blocks: { type: [String], default: [] },

@@ -11,6 +11,20 @@ import type { Chapter } from '../types';
  */
 export const quranSurahs: Chapter[] = [
   {
+    order: 0,
+    title: 'Introduction to the Quran',
+    readingTimeMins: 4,
+    isFree: true,
+    essence:
+      'Revealed to the Prophet Muhammad over 23 years, the Quran is Islam’s foundational scripture — recited daily by over a billion people across the world.',
+    content: [
+      'The Quran, whose name means “the Recitation,” is the foundational scripture of Islam and one of the most influential books ever composed. For over 1,400 years it has shaped the prayers, ethics, art, and daily life of Muslims across every continent.',
+      'Unlike scriptures gathered over centuries, the Quran was revealed to a single person — the Prophet Muhammad — between 610 and 632 CE, first in Mecca and then in Medina. Muslims believe every word is divinely revealed and preserved unchanged.',
+      'It does not tell one continuous story. Instead it weaves together theology, law, ethics, accounts of earlier prophets, warnings, encouragements, and profound meditations on creation and the human soul — themes that return like ocean waves, deepening with each repetition.',
+      'Its chapters (Surahs) range from long to very short, written in Classical Arabic of extraordinary beauty. This reading journey begins with Al-Fatihah, “the Opening” — the seven verses every Muslim recites in daily prayer.',
+    ],
+  },
+  {
     order: 1,
     title: 'Al-Fatihah — The Opening',
     readingTimeMins: 9,

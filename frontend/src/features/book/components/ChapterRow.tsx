@@ -17,6 +17,8 @@ interface ChapterRowProps {
   onUnlock: () => void;
   /** Admin only: edit this chapter's content. Renders a pencil when provided. */
   onEditContent?: () => void;
+  /** Number to show in the badge (defaults to the chapter's real order). */
+  displayNumber?: number;
 }
 
 /** A single chapter row: free/owned chapters read; locked ones show a price. */
@@ -28,6 +30,7 @@ export function ChapterRow({
   onRead,
   onUnlock,
   onEditContent,
+  displayNumber,
 }: ChapterRowProps): JSX.Element {
   return (
     <li className="flex items-center gap-4 rounded-2xl border border-hairline bg-surface p-4 shadow-soft transition-shadow duration-300 hover:shadow-lift">
@@ -37,7 +40,7 @@ export function ChapterRow({
           read ? 'bg-emerald-100 text-emerald-700' : 'bg-cream-surface text-gold-deep'
         }`}
       >
-        {read ? <Check className="h-5 w-5" /> : chapter.order}
+        {read ? <Check className="h-5 w-5" /> : (displayNumber ?? chapter.order)}
       </div>
 
       <div className="min-w-0 flex-1">
