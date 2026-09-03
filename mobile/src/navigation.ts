@@ -7,6 +7,7 @@ export type RootStackParamList = {
   BookDetail: { slug: string };
   Reader: { slug: string; order: number };
   Admin: undefined;
+  Profile: undefined;
 };
 
 export type ScreenProps<T extends keyof RootStackParamList> = NativeStackScreenProps<

@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import {
-  Alert,
   Dimensions,
   FlatList,
   ImageBackground,
@@ -17,6 +16,7 @@ import { getBooks } from '../data/books';
 import type { Book } from '../types';
 import type { ScreenProps } from '../navigation';
 import { TraditionIcon } from '../components/TraditionIcon';
+import { FeedbackModal } from '../components/FeedbackModal';
 import { useAuth } from '../auth/AuthContext';
 import { radius, SERIF, type Colors } from '../theme';
 import { useTheme } from '../theme/ThemeContext';
@@ -28,22 +28,16 @@ const BANNER_H = Math.round(BANNER_W / 3.559); // banner3.png native ratio (1936
 export default function LibraryScreen({ navigation }: ScreenProps<'Library'>): React.ReactElement {
   const { colors } = useTheme();
   const styles = React.useMemo(() => makeStyles(colors), [colors]);
-  const { user, logout } = useAuth();
+  const { user, isGuest, logout } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const allBooks = getBooks();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   const initial = (user?.name?.trim()?.[0] ?? 'G').toUpperCase();
-
-  const onAvatarPress = (): void => {
-    const buttons: Parameters<typeof Alert.alert>[2] = [{ text: 'Cancel', style: 'cancel' }];
-    if (user?.role === 'admin') {
-      buttons.push({ text: 'Dashboard', onPress: () => navigation.navigate('Admin') });
-    }
-    buttons.push({ text: 'Log out', style: 'destructive', onPress: () => void logout() });
-    Alert.alert(user?.name ?? 'Account', user?.email || 'Guest session', buttons);
-  };
 
   const categories = useMemo(
     () => ['All', ...Array.from(new Set(allBooks.map((b) => b.tradition)))],
@@ -74,7 +68,7 @@ export default function LibraryScreen({ navigation }: ScreenProps<'Library'>): R
             style={styles.searchInput}
           />
         </View>
-        <Pressable style={styles.avatar} onPress={onAvatarPress}>
+        <Pressable style={styles.avatar} onPress={() => setMenuOpen(true)}>
           <Text style={styles.avatarText}>{initial}</Text>
         </Pressable>
       </View>
@@ -131,7 +125,98 @@ export default function LibraryScreen({ navigation }: ScreenProps<'Library'>): R
           </View>
         </Pressable>
       </Modal>
+
+      {/* account menu */}
+      <Modal transparent visible={menuOpen} animationType="fade" onRequestClose={() => setMenuOpen(false)}>
+        <Pressable style={styles.menuBackdrop} onPress={() => setMenuOpen(false)}>
+          <View style={styles.menuCard}>
+            <View style={styles.menuHead}>
+              <View style={styles.menuAvatar}>
+                <Text style={styles.avatarText}>{initial}</Text>
+              </View>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={styles.menuName} numberOfLines={1}>
+                  {user?.name ?? 'Guest'}
+                </Text>
+                <Text style={styles.menuEmail} numberOfLines={1}>
+                  {isGuest ? 'Guest session' : user?.email}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.menuDivider} />
+
+            {isAdmin && (
+              <MenuItem
+                icon="grid"
+                label="Dashboard"
+                gold
+                onPress={() => {
+                  setMenuOpen(false);
+                  navigation.navigate('Admin');
+                }}
+              />
+            )}
+            <MenuItem
+              icon="user"
+              label="Profile"
+              onPress={() => {
+                setMenuOpen(false);
+                navigation.navigate('Profile');
+              }}
+            />
+            {!isGuest && (
+              <MenuItem
+                icon="message-square"
+                label="Send feedback"
+                onPress={() => {
+                  setMenuOpen(false);
+                  setFeedbackOpen(true);
+                }}
+              />
+            )}
+            <MenuItem
+              icon="log-out"
+              label="Sign out"
+              destructive
+              onPress={() => {
+                setMenuOpen(false);
+                void logout();
+              }}
+            />
+          </View>
+        </Pressable>
+      </Modal>
+
+      <FeedbackModal
+        visible={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+        subject="App feedback"
+      />
     </SafeAreaView>
+  );
+}
+
+function MenuItem({
+  icon,
+  label,
+  onPress,
+  gold,
+  destructive,
+}: {
+  icon: keyof typeof Feather.glyphMap;
+  label: string;
+  onPress: () => void;
+  gold?: boolean;
+  destructive?: boolean;
+}): React.ReactElement {
+  const { colors } = useTheme();
+  const styles = React.useMemo(() => makeStyles(colors), [colors]);
+  const color = destructive ? '#DC2626' : gold ? colors.goldDeep : colors.body;
+  return (
+    <Pressable style={styles.menuItem} onPress={onPress}>
+      <Feather name={icon} size={17} color={color} />
+      <Text style={[styles.menuItemText, { color }]}>{label}</Text>
+    </Pressable>
   );
 }
 
@@ -253,4 +338,41 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   modalRow: { paddingVertical: 12, paddingHorizontal: 14, borderRadius: radius.sm },
   modalRowText: { fontSize: 15, color: colors.body },
   modalRowActive: { color: colors.goldDeep, fontWeight: '700' },
+  menuBackdrop: { flex: 1, backgroundColor: '#00000055', justifyContent: 'flex-start', alignItems: 'flex-end' },
+  menuCard: {
+    marginTop: 64,
+    marginRight: 12,
+    width: 240,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.hairline,
+    borderRadius: radius.lg,
+    padding: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  menuHead: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 10, paddingVertical: 10 },
+  menuAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuName: { fontSize: 15, fontWeight: '700', color: colors.ink },
+  menuEmail: { fontSize: 12, color: colors.muted, marginTop: 1 },
+  menuDivider: { height: 1, backgroundColor: colors.hairline, marginVertical: 6 },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: radius.md,
+  },
+  menuItemText: { fontSize: 15, fontWeight: '600' },
 });

@@ -17,6 +17,7 @@ import { getBookBySlug, splitIntro, isIntroChapter } from '../data/books';
 import { fetchChapterOverride } from '../api';
 import { submitFeedback } from '../api/feedback';
 import { ContentBlocks } from '../components/ContentBlocks';
+import { ChapterContentEditor } from '../components/ChapterContentEditor';
 import { useAuth } from '../auth/AuthContext';
 import { useTheme } from '../theme/ThemeContext';
 import type { ScreenProps } from '../navigation';
@@ -28,7 +29,8 @@ export default function ReaderScreen({
 }: ScreenProps<'Reader'>): React.ReactElement {
   const { colors, isDark, toggle } = useTheme();
   const styles = React.useMemo(() => makeStyles(colors), [colors]);
-  const { isGuest } = useAuth();
+  const { user, isGuest } = useAuth();
+  const isAdmin = user?.role === 'admin';
   const { slug, order } = route.params;
   const book = getBookBySlug(slug);
   const chapter = book?.chapters.find((c) => c.order === order);
@@ -42,6 +44,7 @@ export default function ReaderScreen({
 
   const [liked, setLiked] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [editorOpen, setEditorOpen] = useState(false);
 
   const likeKey = `wisora.like.${slug}.${order}`;
 
@@ -147,6 +150,11 @@ export default function ReaderScreen({
           <ToolbarButton onPress={toggle}>
             <Feather name={isDark ? 'sun' : 'moon'} size={21} color={isDark ? colors.gold : colors.muted} />
           </ToolbarButton>
+          {isAdmin && (
+            <ToolbarButton onPress={() => setEditorOpen(true)}>
+              <Feather name="edit-3" size={20} color={colors.gold} />
+            </ToolbarButton>
+          )}
         </View>
 
         <ToolbarButton onPress={() => (next ? navigation.replace('Reader', { slug, order: next.order }) : navigation.goBack())}>
@@ -159,6 +167,22 @@ export default function ReaderScreen({
         onClose={() => setFeedbackOpen(false)}
         subject={subject}
       />
+
+      {isAdmin && (
+        <ChapterContentEditor
+          book={book}
+          chapter={chapter}
+          visible={editorOpen}
+          onClose={() => setEditorOpen(false)}
+          onSaved={(saved) =>
+            setOverride({
+              title: saved.title ?? null,
+              essence: saved.essence ?? null,
+              blocks: saved.blocks,
+            })
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }

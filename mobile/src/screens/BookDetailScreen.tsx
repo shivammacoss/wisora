@@ -7,6 +7,7 @@ import type { Chapter } from '../types';
 import type { ScreenProps } from '../navigation';
 import { TraditionIcon } from '../components/TraditionIcon';
 import { ChapterManager } from '../components/ChapterManager';
+import { CurrencySelector } from '../components/CurrencySelector';
 import { chaptersApi, type ManagedChapter } from '../api/chapters';
 import { useAuth } from '../auth/AuthContext';
 import { useCurrency } from '../currency/CurrencyContext';
@@ -19,7 +20,7 @@ export default function BookDetailScreen({
 }: ScreenProps<'BookDetail'>): React.ReactElement {
   const { colors } = useTheme();
   const styles = React.useMemo(() => makeStyles(colors), [colors]);
-  const { currency } = useCurrency();
+  const { currency, setCurrency } = useCurrency();
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
   const book = getBookBySlug(route.params.slug);
@@ -105,12 +106,15 @@ export default function BookDetailScreen({
               <Text style={styles.section}>
                 Chapters <Text style={styles.count}>({rest.length})</Text>
               </Text>
-              {isAdmin && (
-                <Pressable style={styles.manageBtn} onPress={() => setManageOpen(true)}>
-                  <Feather name="list" size={15} color={colors.goldDeep} />
-                  <Text style={styles.manageBtnText}>Manage</Text>
-                </Pressable>
-              )}
+              <View style={styles.sectionActions}>
+                <CurrencySelector value={currency} onChange={setCurrency} />
+                {isAdmin && (
+                  <Pressable style={styles.manageBtn} onPress={() => setManageOpen(true)}>
+                    <Feather name="list" size={15} color={colors.goldDeep} />
+                    <Text style={styles.manageBtnText}>Manage</Text>
+                  </Pressable>
+                )}
+              </View>
             </View>
           </View>
         }
@@ -226,8 +230,11 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 10,
     marginTop: 24,
   },
+  sectionActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   section: { fontSize: 20, fontWeight: '800', color: colors.ink },
   count: { fontSize: 15, fontWeight: '400', color: colors.muted },
   manageBtn: {

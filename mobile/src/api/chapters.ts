@@ -1,5 +1,15 @@
 import { authRequest } from './http';
 
+/** A chapter's authored content (admin overrides + blocks). */
+export interface ChapterContent {
+  bookSlug: string;
+  chapterOrder: number;
+  title: string | null;
+  essence: string | null;
+  blocks: string[];
+  updatedAt: string | null;
+}
+
 /** A chapter in the backend-managed list (add / delete / reorder). */
 export interface ManagedChapter {
   id: string;
@@ -23,6 +33,18 @@ export interface SeedChapter {
 }
 
 export const chaptersApi = {
+  /** Public: fetch a chapter's authored content (null when none yet). */
+  getContent: (bookSlug: string, order: number): Promise<ChapterContent | null> =>
+    authRequest<ChapterContent | null>(`/chapters/${bookSlug}/${order}`).then((d) => d ?? null),
+
+  /** Admin: create or replace a chapter's content (title / essence / blocks). */
+  saveContent: (
+    bookSlug: string,
+    order: number,
+    input: { blocks: string[]; title?: string; essence?: string },
+  ): Promise<ChapterContent> =>
+    authRequest<ChapterContent>(`/chapters/${bookSlug}/${order}`, { method: 'PUT', body: input }),
+
   /** Public: the backend-managed chapter list for a book (empty when unmanaged). */
   list: (bookSlug: string): Promise<ManagedChapter[]> =>
     authRequest<ManagedChapter[]>(`/chapters/${bookSlug}`).then((d) => d ?? []),

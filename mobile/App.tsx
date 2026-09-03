@@ -9,6 +9,7 @@ import LibraryScreen from './src/screens/LibraryScreen';
 import BookDetailScreen from './src/screens/BookDetailScreen';
 import ReaderScreen from './src/screens/ReaderScreen';
 import AdminScreen from './src/screens/AdminScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 import { AuthProvider, useAuth } from './src/auth/AuthContext';
 import { CurrencyProvider } from './src/currency/CurrencyContext';
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
@@ -59,6 +60,7 @@ function RootNav() {
             <Stack.Screen name="BookDetail" component={BookDetailScreen} options={{ title: '' }} />
             <Stack.Screen name="Reader" component={ReaderScreen} options={{ title: '' }} />
             <Stack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
           </>
         ) : (
           <>
