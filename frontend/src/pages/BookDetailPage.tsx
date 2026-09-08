@@ -169,6 +169,7 @@ export default function BookDetailPage(): JSX.Element {
                 book={book}
                 chapter={chapter}
                 displayNumber={i + 1}
+                free={i === 0 || chapter.isFree}
                 unlocked={isUnlocked}
                 read={Boolean(read[`${book.slug}:${chapter.order}`])}
                 currencySymbol={currency.symbol}

@@ -19,6 +19,8 @@ interface ChapterRowProps {
   onEditContent?: () => void;
   /** Number to show in the badge (defaults to the chapter's real order). */
   displayNumber?: number;
+  /** Show the "Free" badge — the first chapter of every book is free. */
+  free?: boolean;
 }
 
 /** A single chapter row: free/owned chapters read; locked ones show a price. */
@@ -31,6 +33,7 @@ export function ChapterRow({
   onUnlock,
   onEditContent,
   displayNumber,
+  free,
 }: ChapterRowProps): JSX.Element {
   return (
     <li className="flex items-center gap-4 rounded-2xl border border-hairline bg-surface p-4 shadow-soft transition-shadow duration-300 hover:shadow-lift">
@@ -63,7 +66,7 @@ export function ChapterRow({
 
       {unlocked ? (
         <div className="flex items-center gap-3">
-          {chapter.isFree && (
+          {(free ?? chapter.isFree) && (
             <span className="hidden rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 sm:inline">
               Free
             </span>
