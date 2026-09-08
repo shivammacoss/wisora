@@ -96,9 +96,6 @@ export default function BookDetailScreen({
                   <Text style={styles.introKicker}>START HERE</Text>
                   <Text style={styles.introTitle}>Introduction</Text>
                 </View>
-                <View style={styles.freePill}>
-                  <Text style={styles.freeText}>Free</Text>
-                </View>
               </Pressable>
             )}
 
