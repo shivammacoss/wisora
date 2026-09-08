@@ -134,9 +134,6 @@ export default function BookDetailPage(): JSX.Element {
               </p>
               <h3 className="truncate font-serif text-lg font-bold text-ink">Introduction</h3>
             </div>
-            <span className="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">
-              Free
-            </span>
           </button>
         )}
 
