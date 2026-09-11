@@ -59,4 +59,23 @@ export class ChaptersController {
     const items = await service.reorder(req.params.bookSlug, req.body.order);
     return ApiResponse.success(res, items);
   }
+
+  /* ── recently deleted ── */
+
+  /** Admin: all soft-deleted chapters (across books). */
+  static async deletedList(_req: Request, res: Response): Promise<Response> {
+    return ApiResponse.success(res, await service.listDeleted());
+  }
+
+  /** Admin: recover a soft-deleted chapter. */
+  static async recover(req: Request, res: Response): Promise<Response> {
+    await service.recover(req.params.id);
+    return ApiResponse.success(res, { id: req.params.id });
+  }
+
+  /** Admin: permanently delete a soft-deleted chapter. */
+  static async permanentDelete(req: Request, res: Response): Promise<Response> {
+    await service.permanentDelete(req.params.id);
+    return ApiResponse.success(res, { id: req.params.id });
+  }
 }

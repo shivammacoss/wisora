@@ -22,6 +22,14 @@ export interface ManagedChapter {
   hasContent: boolean;
 }
 
+/** A soft-deleted chapter shown in "Recently deleted". */
+export interface DeletedChapter {
+  id: string;
+  bookSlug: string;
+  title: string;
+  deletedAt: Date;
+}
+
 /** Fields an admin can author for a chapter. */
 export interface ChapterContentInput {
   blocks: string[];
@@ -78,9 +86,13 @@ export class ChaptersService {
 
   /* ── managed chapter list (add / delete / reorder) ── */
 
-  /** All chapters of a book from the backend-managed list (empty if unmanaged). */
+  /** All LIVE chapters of a book from the managed list (empty if unmanaged). */
   async listManaged(bookSlug: string): Promise<ManagedChapter[]> {
-    const docs = await ChapterContentModel.find({ bookSlug: bookSlug.toLowerCase(), managed: true })
+    const docs = await ChapterContentModel.find({
+      bookSlug: bookSlug.toLowerCase(),
+      managed: true,
+      deleted: { $ne: true },
+    })
       .sort({ chapterOrder: 1 })
       .exec();
     return docs.map(toManaged);
@@ -145,20 +157,63 @@ export class ChaptersService {
     return toManaged(doc);
   }
 
-  /** Delete a managed chapter and close the gap (re-number 1..n). */
+  /**
+   * Soft-delete a managed chapter (moves it to "Recently deleted") and close the
+   * gap by re-numbering the remaining live chapters 1..n. The deleted row is
+   * parked at a high, unique order so it never clashes with live chapters.
+   */
   async deleteChapter(bookSlug: string, order: number): Promise<ManagedChapter[]> {
     const slug = bookSlug.toLowerCase();
-    const del = await ChapterContentModel.findOneAndDelete({
-      bookSlug: slug,
-      chapterOrder: order,
-      managed: true,
-    }).exec();
+    const del = await ChapterContentModel.findOneAndUpdate(
+      { bookSlug: slug, chapterOrder: order, managed: true, deleted: { $ne: true } },
+      { $set: { deleted: true, deletedAt: new Date(), chapterOrder: Date.now() } },
+    ).exec();
     if (!del) throw new NotFoundError('Chapter not found');
-    const remaining = await ChapterContentModel.find({ bookSlug: slug, managed: true })
+    const remaining = await ChapterContentModel.find({
+      bookSlug: slug,
+      managed: true,
+      deleted: { $ne: true },
+    })
       .sort({ chapterOrder: 1 })
       .exec();
     await resequence(remaining);
     return this.listManaged(slug);
+  }
+
+  /** Admin: all soft-deleted chapters across every book, newest first. */
+  async listDeleted(): Promise<DeletedChapter[]> {
+    const docs = await ChapterContentModel.find({ managed: true, deleted: true })
+      .sort({ deletedAt: -1 })
+      .exec();
+    return docs.map((d) => ({
+      id: d.id,
+      bookSlug: d.bookSlug,
+      title: d.title ?? 'Untitled chapter',
+      deletedAt: d.deletedAt ?? d.updatedAt,
+    }));
+  }
+
+  /** Admin: restore a soft-deleted chapter to the end of its book's list. */
+  async recover(id: string): Promise<void> {
+    const doc = await ChapterContentModel.findById(id).exec();
+    if (!doc || !doc.deleted) throw new NotFoundError('Deleted chapter not found');
+    const last = await ChapterContentModel.findOne({
+      bookSlug: doc.bookSlug,
+      managed: true,
+      deleted: { $ne: true },
+    })
+      .sort({ chapterOrder: -1 })
+      .exec();
+    doc.deleted = false;
+    doc.deletedAt = undefined;
+    doc.chapterOrder = (last?.chapterOrder ?? 0) + 1;
+    await doc.save();
+  }
+
+  /** Admin: permanently remove a soft-deleted chapter. */
+  async permanentDelete(id: string): Promise<void> {
+    const doc = await ChapterContentModel.findOneAndDelete({ _id: id, deleted: true }).exec();
+    if (!doc) throw new NotFoundError('Deleted chapter not found');
   }
 
   /** Reorder the managed list to the given sequence of chapter ids. */

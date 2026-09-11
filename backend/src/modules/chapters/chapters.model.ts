@@ -18,6 +18,9 @@ export interface ChapterContentDocument extends Document {
   isFree?: boolean;
   /** Marks a record as part of the authoritative backend chapter list. */
   managed?: boolean;
+  /** Soft-delete: true = in "Recently deleted" (recoverable), false = live. */
+  deleted?: boolean;
+  deletedAt?: Date;
   updatedBy?: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -34,6 +37,8 @@ const chapterContentSchema = new Schema<ChapterContentDocument>(
     isFree: { type: Boolean, default: false },
     // true = this row is part of the book's managed chapter list (add/delete/reorder).
     managed: { type: Boolean, default: false, index: true },
+    deleted: { type: Boolean, default: false, index: true },
+    deletedAt: { type: Date },
     updatedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },
   {

@@ -16,6 +16,12 @@ const router = Router();
 
 const admin = [authenticate, authorize(UserRole.ADMIN)];
 
+// Admin: "Recently deleted" — declared before the :bookSlug routes so the
+// literal "deleted" segment isn't captured as a book slug.
+router.get('/deleted', ...admin, asyncHandler(ChaptersController.deletedList));
+router.post('/deleted/:id/recover', ...admin, asyncHandler(ChaptersController.recover));
+router.delete('/deleted/:id', ...admin, asyncHandler(ChaptersController.permanentDelete));
+
 // Public: the backend-managed chapter list for a book (empty when unmanaged).
 router.get('/:bookSlug', validate({ params: bookSlugParamsSchema }), asyncHandler(ChaptersController.list));
 

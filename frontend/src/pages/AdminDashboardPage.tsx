@@ -8,20 +8,23 @@ import {
   LogOut,
   type LucideIcon,
   MessageSquare,
+  RotateCcw,
   Send,
   Shield,
   ShieldCheck,
   ShieldOff,
+  Trash,
   Trash2,
   Users,
 } from 'lucide-react';
 import { useAuthStore } from '@app/store';
 import { getBooks } from '@features/books';
 import { adminApi, type AdminFeedback, type AdminPayment, type AdminUser } from '@features/admin';
+import { chaptersApi } from '@features/chapters';
 import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
 import { ROUTES } from '@shared/constants';
 
-type Section = 'overview' | 'users' | 'payments' | 'feedback' | 'books';
+type Section = 'overview' | 'users' | 'payments' | 'feedback' | 'books' | 'deleted';
 
 const NAV: { key: Section; label: string; icon: LucideIcon }[] = [
   { key: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -29,6 +32,7 @@ const NAV: { key: Section; label: string; icon: LucideIcon }[] = [
   { key: 'payments', label: 'Payments', icon: CreditCard },
   { key: 'feedback', label: 'Feedback', icon: MessageSquare },
   { key: 'books', label: 'Books', icon: BookOpen },
+  { key: 'deleted', label: 'Recently Deleted', icon: Trash2 },
 ];
 
 /** Admin control panel — only reachable by users whose role is `admin`. */
@@ -106,6 +110,7 @@ export default function AdminDashboardPage(): JSX.Element {
           {section === 'payments' && <PaymentsSection />}
           {section === 'feedback' && <FeedbackSection />}
           {section === 'books' && <BooksSection />}
+          {section === 'deleted' && <DeletedChaptersSection />}
         </main>
       </div>
     </div>
@@ -510,6 +515,86 @@ function BooksSection(): JSX.Element {
           </Card>
         ))}
       </div>
+    </div>
+  );
+}
+
+/* ───────── Recently Deleted ───────── */
+
+function DeletedChaptersSection(): JSX.Element {
+  const { data, loading, error, reload } = useFetch(chaptersApi.listDeleted);
+  const [busy, setBusy] = useState<string | null>(null);
+
+  // Map book slugs → titles so we can show a friendly book name.
+  const bookTitle = (slug: string): string =>
+    getBooks().find((b) => b.slug === slug)?.title ?? slug;
+
+  const recover = async (id: string): Promise<void> => {
+    setBusy(id);
+    try {
+      await chaptersApi.recover(id);
+      reload();
+    } catch (e) {
+      alert(errMsg(e));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const purge = async (id: string, title: string): Promise<void> => {
+    if (!confirm(`Permanently delete "${title}"? This cannot be undone.`)) return;
+    setBusy(id);
+    try {
+      await chaptersApi.permanentDelete(id);
+      reload();
+    } catch (e) {
+      alert(errMsg(e));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="rounded-xl bg-gold/10 px-4 py-3 text-sm text-body">
+        Chapters you delete land here. Recover one to restore it to the end of its book, or delete
+        it permanently to remove it for good.
+      </p>
+      <StateWrap loading={loading} error={error} empty={data?.length === 0}>
+        <div className="space-y-3">
+          {data?.map((c) => (
+            <Card key={c.id} className="flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold uppercase tracking-widest text-gold-deep">
+                  {bookTitle(c.bookSlug)}
+                </p>
+                <h3 className="mt-0.5 truncate font-serif text-lg font-bold text-ink">{c.title}</h3>
+                <p className="text-xs text-muted">
+                  Deleted {new Date(c.deletedAt).toLocaleString()}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  disabled={busy === c.id}
+                  onClick={() => recover(c.id)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-cream-surface px-4 py-2 text-sm font-semibold text-gold-deep transition-colors hover:border-gold/50 hover:bg-gold/10 disabled:opacity-40"
+                >
+                  <RotateCcw className="h-4 w-4" /> Recover
+                </button>
+                <button
+                  type="button"
+                  disabled={busy === c.id}
+                  onClick={() => purge(c.id, c.title)}
+                  className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-500/10 disabled:opacity-40"
+                >
+                  <Trash className="h-4 w-4" /> Delete permanently
+                </button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </StateWrap>
     </div>
   );
 }

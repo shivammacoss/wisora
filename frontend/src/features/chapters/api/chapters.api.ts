@@ -32,6 +32,14 @@ export interface ManagedChapter {
   hasContent: boolean;
 }
 
+/** A soft-deleted chapter shown in the admin "Recently deleted" list. */
+export interface DeletedChapter {
+  id: string;
+  bookSlug: string;
+  title: string;
+  deletedAt: string;
+}
+
 /** One bundled chapter sent to seed the managed list on first management. */
 export interface SeedChapter {
   order: number;
@@ -103,5 +111,23 @@ export const chaptersApi = {
       order: ids,
     });
     return data.data ?? [];
+  },
+
+  /* ── recently deleted (admin) ── */
+
+  /** Admin: every soft-deleted chapter across all books, newest first. */
+  async listDeleted(): Promise<DeletedChapter[]> {
+    const { data } = await http.get<ApiEnvelope<DeletedChapter[]>>('/chapters/deleted');
+    return data.data ?? [];
+  },
+
+  /** Admin: restore a soft-deleted chapter to the end of its book. */
+  async recover(id: string): Promise<void> {
+    await http.post(`/chapters/deleted/${id}/recover`);
+  },
+
+  /** Admin: permanently remove a soft-deleted chapter. */
+  async permanentDelete(id: string): Promise<void> {
+    await http.delete(`/chapters/deleted/${id}`);
   },
 };
