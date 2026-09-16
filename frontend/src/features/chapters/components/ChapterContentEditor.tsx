@@ -188,8 +188,16 @@ export function ChapterContentEditor({
                   onChange={(e) => setEssence(e.target.value)}
                   rows={3}
                   placeholder="A one- or two-sentence distilled summary shown in the gold callout."
-                  className="mb-5 w-full resize-y rounded-xl border border-hairline bg-cream/30 px-3 py-2.5 font-serif text-sm italic leading-relaxed text-ink placeholder:not-italic placeholder:text-muted/70 focus:border-gold focus:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
+                  className="w-full resize-y rounded-xl border border-hairline bg-cream/30 px-3 py-2.5 font-serif text-sm italic leading-relaxed text-ink placeholder:not-italic placeholder:text-muted/70 focus:border-gold focus:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
                 />
+                <p className="mb-5 mt-2 text-xs leading-relaxed text-muted">
+                  A plain essence auto-styles as a gold key line + summary. To add a shloka/verse
+                  (same rules as the body), put each part on its own line:{' '}
+                  <code>&gt;&gt; original verse</code>, <code>~ transliteration</code>,{' '}
+                  <code>&gt; translation</code>. Also <code>## heading</code>, <code>- bullet</code>,{' '}
+                  <code>**bold**</code>, <code>*italic*</code>. Original scripts turn gold
+                  automatically.
+                </p>
 
                 {/* Reflection body */}
                 <label
@@ -227,9 +235,11 @@ export function ChapterContentEditor({
                   className="h-72 w-full resize-y rounded-xl border border-hairline bg-cream/30 px-3 py-2.5 font-mono text-sm leading-relaxed text-ink placeholder:text-muted/70 focus:border-gold focus:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
                 />
 
-                <p className="mt-2 text-xs text-muted">
-                  Formatting: <code>## heading</code>, <code>&gt; verse</code>, <code>- bullet</code>,{' '}
-                  <code>---</code> divider. Plain lines become paragraphs.
+                <p className="mt-2 text-xs leading-relaxed text-muted">
+                  Formatting (one block per line): <code>## heading</code>,{' '}
+                  <code>&gt;&gt; original verse</code>, <code>~ transliteration</code>,{' '}
+                  <code>&gt; translation</code>, <code>- bullet</code>, <code>---</code> divider.
+                  Plain lines become paragraphs; original scripts turn gold automatically.
                 </p>
 
                 {notice && (

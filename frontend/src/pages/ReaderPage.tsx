@@ -256,7 +256,9 @@ export default function ReaderPage(): JSX.Element {
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-gold" /> Essence
             </p>
-            <p className="mt-3 font-serif text-lg italic leading-relaxed text-ink/90">{essence}</p>
+            <div className="mt-3">
+              <EssenceContent text={essence} />
+            </div>
           </aside>
         )}
 
@@ -388,6 +390,63 @@ function ToolbarButton({
 /* ───────── content rendering (light markdown subset) ───────── */
 
 type BlockKind = 'h2' | 'h3' | 'verse' | 'translit' | 'quote' | 'li' | 'hr' | 'p';
+
+/** Split an essence string into renderable blocks (one per non-empty line). */
+function essenceBlocks(text: string): string[] {
+  return text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+/** First sentence → highlighted key insight; the rest → summary. */
+function splitKeyInsight(text: string): { key: string; summary: string } {
+  const m = text.trim().match(/^(.+?[.!?？。])\s+(.+)$/s);
+  if (m) return { key: m[1].trim(), summary: m[2].trim() };
+  return { key: text.trim(), summary: '' };
+}
+
+/**
+ * Every essence follows one pattern: a gold key line + an italic summary.
+ * Plain essences are auto-structured (first sentence = key). If an admin has
+ * explicitly formatted the essence (multiple lines or markdown markers), that
+ * structure is respected and rendered with the same light-markdown rules as
+ * the chapter body (## / > / - / --- and **bold** / *italic* / gold script).
+ */
+function EssenceContent({ text }: { text: string }): JSX.Element {
+  const lines = essenceBlocks(text);
+  const explicit = lines.length > 1 || lines.some((l) => blockType(l) !== 'p');
+
+  if (explicit) {
+    return (
+      <div className="space-y-3">
+        {lines.map((blk, i) =>
+          blockType(blk) === 'p' ? (
+            <p key={i} className="font-serif text-lg italic leading-relaxed text-ink/90">
+              {renderInline(blk)}
+            </p>
+          ) : (
+            <Block key={i} text={blk} />
+          ),
+        )}
+      </div>
+    );
+  }
+
+  const { key, summary } = splitKeyInsight(text);
+  return (
+    <div className="space-y-2.5">
+      <p className="font-serif text-xl font-semibold not-italic leading-snug text-gold-deep">
+        {renderInline(key)}
+      </p>
+      {summary && (
+        <p className="font-serif text-lg italic leading-relaxed text-ink/85">
+          {renderInline(summary)}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function blockType(text: string): BlockKind {
   if (text.startsWith('## ')) return 'h2';
