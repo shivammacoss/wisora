@@ -27,6 +27,9 @@
         "projectId": "eccb965a-e031-4c65-a495-1091b23dd089"
       }
     },
-    "owner": "shivam92388"
+    "owner": "shivam92388",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
