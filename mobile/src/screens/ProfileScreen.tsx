@@ -3,7 +3,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-na
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getBooks } from '../data/books';
+import { getBooks, getBookBySlug } from '../data/books';
 import { useAuth } from '../auth/AuthContext';
 import { useCurrency } from '../currency/CurrencyContext';
 import { CurrencySelector } from '../components/CurrencySelector';
@@ -23,12 +23,28 @@ function initialsOf(name: string): string {
   );
 }
 
+interface LikedChapter {
+  slug: string;
+  order: number;
+  bookTitle: string;
+  chapterTitle: string;
+}
+
+/** Stored as "wisora.like.<book-slug>.<order>" — the slug itself contains hyphens, not dots. */
+const LIKE_PREFIX = 'wisora.like.';
+
+function parseLikeKey(key: string): { slug: string; order: number } {
+  const rest = key.slice(LIKE_PREFIX.length);
+  const i = rest.lastIndexOf('.');
+  return { slug: rest.slice(0, i), order: Number(rest.slice(i + 1)) };
+}
+
 export default function ProfileScreen({ navigation }: ScreenProps<'Profile'>): React.ReactElement {
   const { colors } = useTheme();
   const styles = React.useMemo(() => makeStyles(colors), [colors]);
   const { user, isGuest, logout } = useAuth();
   const { currency, setCurrency } = useCurrency();
-  const [likedCount, setLikedCount] = useState(0);
+  const [likedChapters, setLikedChapters] = useState<LikedChapter[]>([]);
 
   const name = user?.name ?? 'Guest';
   const isAdmin = user?.role === 'admin';
@@ -39,7 +55,19 @@ export default function ProfileScreen({ navigation }: ScreenProps<'Profile'>): R
     AsyncStorage.getAllKeys()
       .then((keys) => AsyncStorage.multiGet(keys.filter((k) => k.startsWith('wisora.like.'))))
       .then((entries) => {
-        if (alive) setLikedCount(entries.filter(([, v]) => v === '1').length);
+        if (!alive) return;
+        const list = entries
+          .filter(([, v]) => v === '1')
+          .map(([k]) => {
+            const { slug, order } = parseLikeKey(k);
+            const book = getBookBySlug(slug);
+            const chapter = book?.chapters.find((c) => c.order === order);
+            return book && chapter
+              ? { slug, order, bookTitle: book.title, chapterTitle: chapter.title }
+              : null;
+          })
+          .filter((c): c is LikedChapter => c !== null);
+        setLikedChapters(list);
       })
       .catch(() => undefined);
     return () => {
@@ -49,7 +77,7 @@ export default function ProfileScreen({ navigation }: ScreenProps<'Profile'>): R
 
   const stats = [
     { icon: 'book-open' as const, label: 'Books', value: String(totalBooks) },
-    { icon: 'heart' as const, label: 'Liked', value: String(likedCount) },
+    { icon: 'heart' as const, label: 'Liked', value: String(likedChapters.length) },
     { icon: 'globe' as const, label: 'Currency', value: currency.code },
   ];
 
@@ -97,6 +125,35 @@ export default function ProfileScreen({ navigation }: ScreenProps<'Profile'>): R
             ))}
           </View>
         </View>
+
+        {/* liked chapters */}
+        {likedChapters.length > 0 && (
+          <>
+            <Text style={styles.sectionLabel}>LIKED CHAPTERS</Text>
+            <View style={styles.legalCard}>
+              {likedChapters.map((c, i) => (
+                <React.Fragment key={`${c.slug}:${c.order}`}>
+                  {i > 0 && <View style={styles.legalDivider} />}
+                  <Pressable
+                    style={styles.likedRow}
+                    onPress={() => navigation.navigate('Reader', { slug: c.slug, order: c.order })}
+                  >
+                    <Feather name="heart" size={15} color={colors.gold} />
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text style={styles.likedTitle} numberOfLines={1}>
+                        {c.chapterTitle}
+                      </Text>
+                      <Text style={styles.likedBook} numberOfLines={1}>
+                        {c.bookTitle}
+                      </Text>
+                    </View>
+                    <Feather name="chevron-right" size={16} color={colors.muted} />
+                  </Pressable>
+                </React.Fragment>
+              ))}
+            </View>
+          </>
+        )}
 
         {/* currency */}
         <Text style={styles.sectionLabel}>DISPLAY CURRENCY</Text>
@@ -204,6 +261,9 @@ const makeStyles = (colors: Colors) => StyleSheet.create({
   statLabel: { fontSize: 12, color: colors.muted, marginTop: 1 },
   sectionLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1, color: colors.muted, marginTop: 24, marginBottom: 10 },
   currencyRow: { flexDirection: 'row' },
+  likedRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 12 },
+  likedTitle: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  likedBook: { fontSize: 12, color: colors.muted, marginTop: 1 },
   legalCard: {
     backgroundColor: colors.surface,
     borderWidth: 1,
