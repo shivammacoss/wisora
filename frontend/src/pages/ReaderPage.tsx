@@ -15,7 +15,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { getBookBySlug, isIntroChapter, splitIntro, type Chapter } from '@features/books';
-import { chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
+import { chapterLiked, chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
 import { FeedbackModal } from '@features/feedback';
 import { chaptersApi, ChapterContentEditor, type ManagedChapter } from '@features/chapters';
 import { ROUTES } from '@shared/constants';
@@ -34,6 +34,8 @@ export default function ReaderPage(): JSX.Element {
 
   const unlocked = useLibraryStore((s) => s.unlocked);
   const markRead = useLibraryStore((s) => s.markRead);
+  const likedMarks = useLibraryStore((s) => s.liked);
+  const toggleLike = useLibraryStore((s) => s.toggleLike);
   // Admins get full, free access to every chapter.
   const isAdmin = useAuthStore((s) => s.user?.role === 'admin');
   const theme = useThemeStore((s) => s.theme);
@@ -41,7 +43,6 @@ export default function ReaderPage(): JSX.Element {
   const isDark = theme === 'dark';
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [liked, setLiked] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   // Admin-authored content from the backend (falls back to bundled content).
@@ -81,7 +82,6 @@ export default function ReaderPage(): JSX.Element {
   // Record progress + reset per-chapter UI whenever the chapter changes.
   useEffect(() => {
     if (book && chapter && accessible) markRead(book.slug, chapter.order);
-    setLiked(false);
     setMenuOpen(false);
     window.scrollTo({ top: 0 });
   }, [book, chapter, accessible, markRead]);
@@ -149,6 +149,7 @@ export default function ReaderPage(): JSX.Element {
 
   const prev = chapters.find((c) => c.order === order - 1);
   const next = chapters.find((c) => c.order === order + 1);
+  const liked = chapterLiked(likedMarks, book.slug, chapter.order);
   // Header label: "Introduction" for the intro, else the renumbered chapter no.
   const displayNumber = rest.findIndex((c) => c.order === chapter.order) + 1;
   const chapterLabel = isIntro ? 'Introduction' : `Chapter ${displayNumber}`;
@@ -299,7 +300,7 @@ export default function ReaderPage(): JSX.Element {
 
           <div className="flex items-center gap-1">
             <ToolbarButton
-              onClick={() => setLiked((v) => !v)}
+              onClick={() => toggleLike(book.slug, chapter.order)}
               label={liked ? 'Unlike' : 'Like'}
               pressed={liked}
             >
