@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Wisora",
+    "tagline": "مقدّس حکمت، روزانہ"
+  },
+  "nav": {
+    "searchPlaceholder": "اپنی اگلی کتاب تلاش کریں…",
+    "library": "لائبریری",
+    "profile": "پروفائل",
+    "admin": "ایڈمن",
+    "signIn": "سائن ان کریں",
+    "signOut": "سائن آؤٹ",
+    "guest": "مہمان"
+  },
+  "library": {
+    "bannerTitle": "مقدّس حکمت، روزانہ۔",
+    "bannerSubtitle": "ایک وقت میں ایک باب۔",
+    "myBooks": "میری کتابیں",
+    "allCategories": "تمام زمرے",
+    "noResults": "آپ کی تلاش سے کوئی کتاب نہیں ملی۔",
+    "from": "از"
+  },
+  "book": {
+    "chapters": "ابواب",
+    "manageChapters": "ابواب کا نظم کریں",
+    "startHere": "یہاں سے شروع کریں",
+    "introduction": "تعارف",
+    "notFound": "کتاب نہیں ملی۔",
+    "backToLibrary": "اپنی لائبریری پر واپس جائیں",
+    "free": "مفت",
+    "read": "پڑھیں",
+    "reread": "دوبارہ پڑھیں"
+  },
+  "reader": {
+    "essence": "خلاصہ",
+    "reflection": "غور و فکر",
+    "minRead": "منٹ کا مطالعہ",
+    "chapter": "باب",
+    "introduction": "تعارف",
+    "prev": "پچھلا باب",
+    "next": "اگلا باب",
+    "like": "پسند",
+    "comment": "اس باب پر رائے بھیجیں",
+    "allChapters": "تمام ابواب",
+    "backToLibrary": "لائبریری پر واپس جائیں",
+    "lightMode": "روشن موڈ",
+    "darkMode": "تاریک موڈ"
+  },
+  "common": {
+    "language": "زبان",
+    "translating": "ترجمہ ہو رہا ہے…"
+  }
+}

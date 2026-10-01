@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Wisora",
+    "tagline": "Sabiduría sagrada, cada día"
+  },
+  "nav": {
+    "searchPlaceholder": "Busca tu próximo libro…",
+    "library": "Biblioteca",
+    "profile": "Perfil",
+    "admin": "Admin",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "guest": "Invitado"
+  },
+  "library": {
+    "bannerTitle": "Sabiduría sagrada, cada día.",
+    "bannerSubtitle": "Un capítulo a la vez.",
+    "myBooks": "Mis libros",
+    "allCategories": "Todas las categorías",
+    "noResults": "Ningún libro coincide con tu búsqueda.",
+    "from": "De"
+  },
+  "book": {
+    "chapters": "Capítulos",
+    "manageChapters": "Gestionar capítulos",
+    "startHere": "Empieza aquí",
+    "introduction": "Introducción",
+    "notFound": "Libro no encontrado.",
+    "backToLibrary": "Volver a tu biblioteca",
+    "free": "Gratis",
+    "read": "Leer",
+    "reread": "Releer"
+  },
+  "reader": {
+    "essence": "Esencia",
+    "reflection": "Reflexión",
+    "minRead": "min de lectura",
+    "chapter": "Capítulo",
+    "introduction": "Introducción",
+    "prev": "Capítulo anterior",
+    "next": "Capítulo siguiente",
+    "like": "Me gusta",
+    "comment": "Enviar comentarios sobre este capítulo",
+    "allChapters": "Todos los capítulos",
+    "backToLibrary": "Volver a la biblioteca",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo oscuro"
+  },
+  "common": {
+    "language": "Idioma",
+    "translating": "Traduciendo…"
+  }
+}

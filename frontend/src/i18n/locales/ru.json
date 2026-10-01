@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Wisora",
+    "tagline": "Священная мудрость каждый день"
+  },
+  "nav": {
+    "searchPlaceholder": "Найдите свою следующую книгу…",
+    "library": "Библиотека",
+    "profile": "Профиль",
+    "admin": "Админ",
+    "signIn": "Войти",
+    "signOut": "Выйти",
+    "guest": "Гость"
+  },
+  "library": {
+    "bannerTitle": "Священная мудрость каждый день.",
+    "bannerSubtitle": "По одной главе за раз.",
+    "myBooks": "Мои книги",
+    "allCategories": "Все категории",
+    "noResults": "По вашему запросу книг не найдено.",
+    "from": "Из"
+  },
+  "book": {
+    "chapters": "Главы",
+    "manageChapters": "Управление главами",
+    "startHere": "Начните здесь",
+    "introduction": "Введение",
+    "notFound": "Книга не найдена.",
+    "backToLibrary": "Вернуться в библиотеку",
+    "free": "Бесплатно",
+    "read": "Читать",
+    "reread": "Перечитать"
+  },
+  "reader": {
+    "essence": "Суть",
+    "reflection": "Размышление",
+    "minRead": "мин чтения",
+    "chapter": "Глава",
+    "introduction": "Введение",
+    "prev": "Предыдущая глава",
+    "next": "Следующая глава",
+    "like": "Нравится",
+    "comment": "Оставить отзыв об этой главе",
+    "allChapters": "Все главы",
+    "backToLibrary": "Вернуться в библиотеку",
+    "lightMode": "Светлая тема",
+    "darkMode": "Тёмная тема"
+  },
+  "common": {
+    "language": "Язык",
+    "translating": "Перевод…"
+  }
+}

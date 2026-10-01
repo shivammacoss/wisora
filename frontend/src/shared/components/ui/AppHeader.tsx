@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Logo } from '@features/landing';
 import { UserMenu } from './UserMenu';
 import { ThemeToggle } from './ThemeToggle';
+import { LanguageSelector } from './LanguageSelector';
 import { ROUTES } from '@shared/constants';
 
 interface AppHeaderProps {
@@ -40,6 +41,7 @@ export function AppHeader({ right, showBack = false }: AppHeaderProps): JSX.Elem
           </button>
         </div>
         <div className="flex items-center gap-3">
+          <LanguageSelector />
           <ThemeToggle />
           {right ?? <UserMenu />}
         </div>

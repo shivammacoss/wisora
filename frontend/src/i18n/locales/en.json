@@ -3,8 +3,51 @@
     "name": "Wisora",
     "tagline": "Sacred Wisdom, Daily"
   },
-  "auth": {
+  "nav": {
+    "searchPlaceholder": "Search for your next book…",
+    "library": "Library",
+    "profile": "Profile",
+    "admin": "Admin",
     "signIn": "Sign in",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "guest": "Guest"
+  },
+  "library": {
+    "bannerTitle": "Sacred wisdom, daily.",
+    "bannerSubtitle": "One chapter at a time.",
+    "myBooks": "My Books",
+    "allCategories": "All Categories",
+    "noResults": "No books match your search.",
+    "from": "From"
+  },
+  "book": {
+    "chapters": "Chapters",
+    "manageChapters": "Manage chapters",
+    "startHere": "Start here",
+    "introduction": "Introduction",
+    "notFound": "Book not found.",
+    "backToLibrary": "Back to your library",
+    "free": "Free",
+    "read": "Read",
+    "reread": "Reread"
+  },
+  "reader": {
+    "essence": "Essence",
+    "reflection": "Reflection",
+    "minRead": "min read",
+    "chapter": "Chapter",
+    "introduction": "Introduction",
+    "prev": "Previous chapter",
+    "next": "Next chapter",
+    "like": "Like",
+    "comment": "Send feedback on this chapter",
+    "allChapters": "All chapters",
+    "backToLibrary": "Back to library",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
+  },
+  "common": {
+    "language": "Language",
+    "translating": "Translating…"
   }
 }

@@ -1,0 +1,53 @@
+{
+  "app": {
+    "name": "Wisora",
+    "tagline": "Sagesse sacrée, chaque jour"
+  },
+  "nav": {
+    "searchPlaceholder": "Cherchez votre prochain livre…",
+    "library": "Bibliothèque",
+    "profile": "Profil",
+    "admin": "Admin",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter",
+    "guest": "Invité"
+  },
+  "library": {
+    "bannerTitle": "Sagesse sacrée, chaque jour.",
+    "bannerSubtitle": "Un chapitre à la fois.",
+    "myBooks": "Mes livres",
+    "allCategories": "Toutes les catégories",
+    "noResults": "Aucun livre ne correspond à votre recherche.",
+    "from": "De"
+  },
+  "book": {
+    "chapters": "Chapitres",
+    "manageChapters": "Gérer les chapitres",
+    "startHere": "Commencez ici",
+    "introduction": "Introduction",
+    "notFound": "Livre introuvable.",
+    "backToLibrary": "Retour à votre bibliothèque",
+    "free": "Gratuit",
+    "read": "Lire",
+    "reread": "Relire"
+  },
+  "reader": {
+    "essence": "Essence",
+    "reflection": "Réflexion",
+    "minRead": "min de lecture",
+    "chapter": "Chapitre",
+    "introduction": "Introduction",
+    "prev": "Chapitre précédent",
+    "next": "Chapitre suivant",
+    "like": "J'aime",
+    "comment": "Envoyer un commentaire sur ce chapitre",
+    "allChapters": "Tous les chapitres",
+    "backToLibrary": "Retour à la bibliothèque",
+    "lightMode": "Mode clair",
+    "darkMode": "Mode sombre"
+  },
+  "common": {
+    "language": "Langue",
+    "translating": "Traduction…"
+  }
+}

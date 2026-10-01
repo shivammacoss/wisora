@@ -1,6 +1,8 @@
 import { BookOpen, Check, Lock, PencilLine } from 'lucide-react';
 import { Button } from '@features/landing/components/ui/Button';
 import type { Book, Chapter } from '@features/books';
+import { useTranslatedText } from '@shared/hooks/useTranslated';
+import { useT } from '@/i18n';
 
 interface ChapterRowProps {
   book: Book;
@@ -35,6 +37,8 @@ export function ChapterRow({
   displayNumber,
   free,
 }: ChapterRowProps): JSX.Element {
+  const t = useT();
+  const title = useTranslatedText(chapter.title);
   return (
     <li className="flex items-center gap-4 rounded-2xl border border-hairline bg-surface p-4 shadow-soft transition-shadow duration-300 hover:shadow-lift">
       {/* order / status badge */}
@@ -47,8 +51,10 @@ export function ChapterRow({
       </div>
 
       <div className="min-w-0 flex-1">
-        <h4 className="truncate font-semibold text-ink">{chapter.title}</h4>
-        <p className="text-sm text-muted">{chapter.readingTimeMins} min read</p>
+        <h4 className="truncate font-semibold text-ink">{title}</h4>
+        <p className="text-sm text-muted">
+          {chapter.readingTimeMins} {t('reader.minRead')}
+        </p>
       </div>
 
       {/* admin: edit content */}
@@ -68,7 +74,7 @@ export function ChapterRow({
         <div className="flex items-center gap-3">
           {(free ?? chapter.isFree) && (
             <span className="hidden rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 sm:inline">
-              Free
+              {t('book.free')}
             </span>
           )}
           <Button
@@ -77,7 +83,7 @@ export function ChapterRow({
             leftIcon={<BookOpen className="h-4 w-4" />}
             onClick={onRead}
           >
-            {read ? 'Reread' : 'Read'}
+            {read ? t('book.reread') : t('book.read')}
           </Button>
         </div>
       ) : (

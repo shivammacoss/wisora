@@ -18,6 +18,8 @@ import { getBookBySlug, isIntroChapter, splitIntro, type Chapter } from '@featur
 import { chapterLiked, chapterUnlocked, useAuthStore, useLibraryStore, useThemeStore } from '@app/store';
 import { FeedbackModal } from '@features/feedback';
 import { chaptersApi, ChapterContentEditor, type ManagedChapter } from '@features/chapters';
+import { useTranslated } from '@shared/hooks/useTranslated';
+import { useT } from '@/i18n';
 import { ROUTES } from '@shared/constants';
 import { cn } from '@shared/utils/cn';
 
@@ -41,6 +43,7 @@ export default function ReaderPage(): JSX.Element {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggle);
   const isDark = theme === 'dark';
+  const t = useT();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
@@ -132,6 +135,24 @@ export default function ReaderPage(): JSX.Element {
     };
   }, [bookId]);
 
+  // ── content (derived here so the translation hook runs before any early
+  // return — Rules of Hooks). Admin-authored content takes precedence. ──
+  const paras = remoteBlocks && remoteBlocks.length > 0 ? remoteBlocks : (chapter?.content ?? []);
+  const displayTitle = remoteTitle ?? chapter?.title ?? '';
+  const bundledEssence = chapter?.essence;
+  const essence = remoteEssence ?? bundledEssence ?? paras[0];
+  // When there's a dedicated essence, the whole body is reflection; otherwise
+  // the first paragraph doubled as the essence.
+  const body = remoteEssence || bundledEssence ? paras : paras.slice(1);
+  // Only translatable parts go to the translator; scripture verses and
+  // transliterations stay in their original script.
+  const bodyParts = body.map(splitBlockForTranslation);
+  const translated = useTranslated([
+    displayTitle,
+    essence ?? '',
+    ...bodyParts.filter((p) => p.translate).map((p) => p.text),
+  ]);
+
   // No such book → library.
   if (!book) return <Navigate to={ROUTES.library} replace />;
   // Chapter not found: wait while the managed list is still loading, else bounce.
@@ -152,7 +173,7 @@ export default function ReaderPage(): JSX.Element {
   const liked = chapterLiked(likedMarks, book.slug, chapter.order);
   // Header label: "Introduction" for the intro, else the renumbered chapter no.
   const displayNumber = rest.findIndex((c) => c.order === chapter.order) + 1;
-  const chapterLabel = isIntro ? 'Introduction' : `Chapter ${displayNumber}`;
+  const chapterLabel = isIntro ? t('reader.introduction') : `${t('reader.chapter')} ${displayNumber}`;
   const nextAccessible = next
     ? isAdmin || chapterUnlocked(unlocked, book.slug, next.order, next.isFree)
     : false;
@@ -166,16 +187,16 @@ export default function ReaderPage(): JSX.Element {
     else navigate(ROUTES.bookDetail(book.slug));
   };
 
-  // Split content into the essence callout + the reflection body.
-  // Admin-authored content (from the backend) takes precedence over bundled.
-  const paras = remoteBlocks && remoteBlocks.length > 0 ? remoteBlocks : (chapter.content ?? []);
-  const displayTitle = remoteTitle ?? chapter.title;
-  const bundledEssence = chapter.essence;
-  const essence = remoteEssence ?? bundledEssence ?? paras[0];
-  // When there's a dedicated essence (bundled or override), the whole body is
-  // reflection; otherwise the first paragraph doubled as the essence.
-  const body = remoteEssence || bundledEssence ? paras : paras.slice(1);
-  const firstParaIdx = body.findIndex((b) => blockType(b) === 'p');
+  // Reconstruct the translated content — block prefixes, verses and scripts
+  // are preserved; only prose/headings/translations are swapped for the
+  // active language (identical to the originals when language is English).
+  const tDisplayTitle = translated[0] || displayTitle;
+  const tEssence = essence ? translated[1] || essence : essence;
+  let nextIdx = 2;
+  const tBody = bodyParts.map((p) =>
+    p.translate ? p.prefix + (translated[nextIdx++] ?? p.text) : p.text,
+  );
+  const firstParaIdx = tBody.findIndex((b) => blockType(b) === 'p');
 
   return (
     <div className="flex min-h-screen flex-col bg-cream">
@@ -195,7 +216,7 @@ export default function ReaderPage(): JSX.Element {
             {chapterLabel}
           </p>
           <h1 className="truncate font-serif text-lg font-bold leading-tight text-ink">
-            {displayTitle}
+            {tDisplayTitle}
           </h1>
         </div>
 
@@ -224,14 +245,14 @@ export default function ReaderPage(): JSX.Element {
                   onClick={() => navigate(ROUTES.bookDetail(book.slug))}
                   className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-body transition-colors hover:bg-cream-surface"
                 >
-                  <BookOpen className="h-4 w-4 text-gold-deep" /> All chapters
+                  <BookOpen className="h-4 w-4 text-gold-deep" /> {t('reader.allChapters')}
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate(ROUTES.library)}
                   className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-body transition-colors hover:bg-cream-surface"
                 >
-                  <ArrowLeft className="h-4 w-4 text-gold-deep" /> Back to library
+                  <ArrowLeft className="h-4 w-4 text-gold-deep" /> {t('reader.backToLibrary')}
                 </button>
               </div>
             </>
@@ -248,27 +269,27 @@ export default function ReaderPage(): JSX.Element {
         className="mx-auto w-full max-w-2xl flex-1 px-6 py-9 md:max-w-3xl md:py-12 lg:max-w-5xl lg:px-10 xl:max-w-6xl"
       >
         <p className="inline-flex items-center gap-1.5 text-sm text-muted">
-          <Clock className="h-4 w-4" /> {chapter.readingTimeMins} min read
+          <Clock className="h-4 w-4" /> {chapter.readingTimeMins} {t('reader.minRead')}
         </p>
 
         {/* Essence callout */}
-        {essence && (
+        {tEssence && (
           <aside className="mt-6 rounded-r-2xl border-l-4 border-gold bg-gold/[0.06] px-6 py-5">
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-gold-deep">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-gold" /> Essence
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-gold" /> {t('reader.essence')}
             </p>
             <div className="mt-3">
-              <EssenceContent text={essence} />
+              <EssenceContent text={tEssence} />
             </div>
           </aside>
         )}
 
         {/* Reflection heading */}
-        {body.length > 0 && (
+        {tBody.length > 0 && (
           <div className="mb-7 mt-12">
             <div className="h-px w-full bg-hairline" />
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-muted">
-              Reflection
+              {t('reader.reflection')}
             </p>
             <div className="mt-3 h-0.5 w-14 rounded-full bg-gold/50" />
           </div>
@@ -276,11 +297,11 @@ export default function ReaderPage(): JSX.Element {
 
         {/* Body */}
         <article className="space-y-5">
-          {body.length > 0 ? (
-            body.map((block, i) => <Block key={i} text={block} first={i === firstParaIdx} />)
+          {tBody.length > 0 ? (
+            tBody.map((block, i) => <Block key={i} text={block} first={i === firstParaIdx} />)
           ) : (
             <p className="text-lg leading-[1.85] text-body first-letter:float-left first-letter:mr-3 first-letter:mt-1 first-letter:font-serif first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-gold-deep">
-              The distilled summary of <span className="italic">{displayTitle}</span> is being
+              The distilled summary of <span className="italic">{tDisplayTitle}</span> is being
               prepared. Your progress for this chapter has been recorded.
             </p>
           )}
@@ -290,26 +311,22 @@ export default function ReaderPage(): JSX.Element {
       {/* ── floating action bar ── */}
       <div className="sticky bottom-0 z-30 border-t border-hairline bg-cream/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-6 py-2.5 md:max-w-3xl lg:max-w-5xl lg:px-10 xl:max-w-6xl">
-          <ToolbarButton
-            onClick={goPrev}
-            disabled={!prev}
-            label={prev ? 'Previous chapter' : 'No previous chapter'}
-          >
+          <ToolbarButton onClick={goPrev} disabled={!prev} label={t('reader.prev')}>
             <ChevronLeft className="h-5 w-5" />
           </ToolbarButton>
 
           <div className="flex items-center gap-1">
             <ToolbarButton
               onClick={() => toggleLike(book.slug, chapter.order)}
-              label={liked ? 'Unlike' : 'Like'}
+              label={t('reader.like')}
               pressed={liked}
             >
               <Heart className={cn('h-5 w-5', liked ? 'fill-gold text-gold' : 'text-muted')} />
             </ToolbarButton>
-            <ToolbarButton onClick={() => setFeedbackOpen(true)} label="Send feedback on this chapter">
+            <ToolbarButton onClick={() => setFeedbackOpen(true)} label={t('reader.comment')}>
               <MessageSquare className="h-5 w-5 text-muted" />
             </ToolbarButton>
-            <ToolbarButton onClick={toggleTheme} label={isDark ? 'Light mode' : 'Dark mode'}>
+            <ToolbarButton onClick={toggleTheme} label={isDark ? t('reader.lightMode') : t('reader.darkMode')}>
               {isDark ? (
                 <Sun className="h-5 w-5 text-gold" />
               ) : (
@@ -326,10 +343,7 @@ export default function ReaderPage(): JSX.Element {
             )}
           </div>
 
-          <ToolbarButton
-            onClick={goNext}
-            label={next ? (nextAccessible ? 'Next chapter' : 'Unlock next chapter') : 'Back to chapters'}
-          >
+          <ToolbarButton onClick={goNext} label={t('reader.next')}>
             <ChevronRight className="h-5 w-5" />
           </ToolbarButton>
         </div>
@@ -447,6 +461,34 @@ function EssenceContent({ text }: { text: string }): JSX.Element {
       )}
     </div>
   );
+}
+
+/**
+ * Split a content block into its marker prefix and the translatable text.
+ * Scripture verses (`>>`), transliterations (`~`) and dividers stay in their
+ * original form; headings, quotes, bullets and paragraphs are translated.
+ */
+function splitBlockForTranslation(block: string): {
+  prefix: string;
+  text: string;
+  translate: boolean;
+} {
+  switch (blockType(block)) {
+    case 'h2':
+      return { prefix: '## ', text: block.slice(3), translate: true };
+    case 'h3':
+      return { prefix: '### ', text: block.slice(4), translate: true };
+    case 'quote':
+      return { prefix: '> ', text: block.slice(2), translate: true };
+    case 'li':
+      return { prefix: '- ', text: block.slice(2), translate: true };
+    case 'verse':
+    case 'translit':
+    case 'hr':
+      return { prefix: '', text: block, translate: false };
+    default:
+      return { prefix: '', text: block, translate: true };
+  }
 }
 
 function blockType(text: string): BlockKind {

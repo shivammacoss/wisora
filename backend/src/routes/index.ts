@@ -5,6 +5,7 @@ import { userRoutes } from '@modules/users';
 import { paymentRoutes } from '@modules/payments';
 import { feedbackRoutes } from '@modules/feedback';
 import { chapterRoutes } from '@modules/chapters';
+import { translateRoutes } from '@modules/translate';
 
 /**
  * API v1 router. Every module mounts its own router here.
@@ -23,6 +24,7 @@ v1.use('/users', userRoutes);
 v1.use('/payments', paymentRoutes);
 v1.use('/feedback', feedbackRoutes);
 v1.use('/chapters', chapterRoutes);
+v1.use('/translate', translateRoutes);
 // v1.use('/books', bookRoutes);
 // v1.use('/library', libraryRoutes);
 

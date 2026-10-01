@@ -9,3 +9,4 @@ export {
 } from './library.store';
 export { useCurrencyStore, toPaymentCurrency } from './currency.store';
 export { useThemeStore, type Theme } from './theme.store';
+export { useLocaleStore, isRtl, LANGS, type Lang } from './locale.store';

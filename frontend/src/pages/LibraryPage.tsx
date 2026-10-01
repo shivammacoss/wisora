@@ -4,6 +4,9 @@ import { ChevronDown, Search } from 'lucide-react';
 import { getBooks, type Book } from '@features/books';
 import { UserMenu } from '@shared/components/ui/UserMenu';
 import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
+import { LanguageSelector } from '@shared/components/ui/LanguageSelector';
+import { useTranslated } from '@shared/hooks/useTranslated';
+import { useT } from '@/i18n';
 import { TraditionIcon } from '@shared/components/ui/TraditionIcon';
 import { ROUTES } from '@shared/constants';
 import libraryBanner from '@assets/images/banner3.png';
@@ -12,6 +15,7 @@ import libraryBanner from '@assets/images/banner3.png';
 export default function LibraryPage(): JSX.Element {
   const navigate = useNavigate();
   const allBooks = getBooks();
+  const t = useT();
 
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All');
@@ -42,11 +46,12 @@ export default function LibraryPage(): JSX.Element {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search for your next book…"
+            placeholder={t('nav.searchPlaceholder')}
             className="w-full rounded-xl border border-hairline bg-cream/40 py-2.5 pl-10 pr-4 text-sm text-ink placeholder:text-muted focus:border-gold focus:bg-surface focus:outline-none focus-visible:ring-2 focus-visible:ring-gold/40"
           />
         </div>
         <div className="ml-auto flex items-center gap-3">
+          <LanguageSelector />
           <ThemeToggle />
           <UserMenu />
         </div>
@@ -63,10 +68,10 @@ export default function LibraryPage(): JSX.Element {
           {/* minimalist headline in the banner's open (cream) space on the left */}
           <div className="pointer-events-none absolute inset-y-0 left-0 flex w-[42%] flex-col justify-center px-5 sm:px-8 md:px-10">
             <h2 className="font-serif text-lg font-bold leading-tight text-neutral-900 sm:text-2xl md:text-4xl">
-              Sacred wisdom, daily.
+              {t('library.bannerTitle')}
             </h2>
             <p className="mt-1 text-[11px] font-medium text-neutral-900/70 sm:mt-2 sm:text-sm md:text-base">
-              One chapter at a time.
+              {t('library.bannerSubtitle')}
             </p>
           </div>
         </section>
@@ -74,7 +79,7 @@ export default function LibraryPage(): JSX.Element {
         {/* ── My Books ── */}
         <section className="rounded-3xl border border-hairline bg-surface p-6 shadow-sm sm:p-7">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="font-serif text-2xl font-bold text-ink">My Books</h2>
+            <h2 className="font-serif text-2xl font-bold text-ink">{t('library.myBooks')}</h2>
 
             {/* category filter */}
             <div className="relative shrink-0">
@@ -86,7 +91,7 @@ export default function LibraryPage(): JSX.Element {
               >
                 {categories.map((c) => (
                   <option key={c} value={c}>
-                    {c === 'All' ? 'All Categories' : c}
+                    {c === 'All' ? t('library.allCategories') : c}
                   </option>
                 ))}
               </select>
@@ -95,7 +100,7 @@ export default function LibraryPage(): JSX.Element {
           </div>
 
           {books.length === 0 ? (
-            <p className="mt-8 text-center text-sm text-muted">No books match your search.</p>
+            <p className="mt-8 text-center text-sm text-muted">{t('library.noResults')}</p>
           ) : (
             <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {books.map((book) => (
@@ -126,6 +131,13 @@ function MyBookCard({
   onRead: () => void;
   rank?: number;
 }): JSX.Element {
+  const t = useT();
+  const [tTitle, tSubtitle, tUnit, tLanguage] = useTranslated([
+    book.title,
+    book.subtitle,
+    book.unit,
+    book.language,
+  ]);
   return (
     <button
       type="button"
@@ -146,20 +158,20 @@ function MyBookCard({
 
       {/* source */}
       <p className="relative mt-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
-        From
+        {t('library.from')}
       </p>
-      <p className="relative mt-1 text-sm font-medium text-gold-deep">{book.title}</p>
+      <p className="relative mt-1 text-sm font-medium text-gold-deep">{tTitle}</p>
 
       {/* poetic headline */}
       <h3 className="relative mt-2 font-serif text-2xl font-bold leading-tight text-gold sm:text-[1.7rem]">
-        {book.subtitle}
+        {tSubtitle}
       </h3>
 
       {/* meta */}
       <p className="relative mt-5 text-sm font-medium text-ink">
-        {book.chapters.length} {book.unit}
+        {book.chapters.length} {tUnit}
       </p>
-      <p className="relative mt-1 text-xs text-muted">{book.language}</p>
+      <p className="relative mt-1 text-xs text-muted">{tLanguage}</p>
     </button>
   );
 }

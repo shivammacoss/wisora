@@ -10,6 +10,8 @@ import { CurrencySelector } from '@features/landing/components/ui/CurrencySelect
 import { chapterUnlocked, useAuthStore, useCurrencyStore, useLibraryStore, toPaymentCurrency } from '@app/store';
 import { AppHeader } from '@shared/components/ui/AppHeader';
 import { TraditionIcon } from '@shared/components/ui/TraditionIcon';
+import { useTranslated } from '@shared/hooks/useTranslated';
+import { useT } from '@/i18n';
 import { ROUTES } from '@shared/constants';
 
 /** Book detail — hero + chapter list with per-chapter paywall. */
@@ -60,14 +62,21 @@ export default function BookDetailPage(): JSX.Element {
     },
   });
 
+  const t = useT();
+  const [tTitle, tSubtitle, tDescription] = useTranslated([
+    book?.title ?? '',
+    book?.subtitle ?? '',
+    book?.description ?? '',
+  ]);
+
   if (!book) {
     return (
       <div className="min-h-screen bg-cream">
         <AppHeader />
         <main className="mx-auto max-w-3xl px-6 py-20 text-center">
-          <p className="text-body">Book not found.</p>
+          <p className="text-body">{t('book.notFound')}</p>
           <Link to={ROUTES.library} className="mt-4 inline-block font-medium text-gold-deep underline">
-            ← Back to your library
+            ← {t('book.backToLibrary')}
           </Link>
         </main>
       </div>
@@ -108,15 +117,15 @@ export default function BookDetailPage(): JSX.Element {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest text-gold-deep">
-              {book.subtitle}
+              {tSubtitle}
             </p>
             <h1 className="mt-1 font-serif text-4xl font-extrabold text-ink md:text-5xl">
-              {book.title}
+              {tTitle}
             </h1>
           </div>
         </motion.div>
 
-        <p className="mt-5 max-w-2xl leading-relaxed text-body">{book.description}</p>
+        <p className="mt-5 max-w-2xl leading-relaxed text-body">{tDescription}</p>
 
         {/* introduction — shown on its own, before the numbered chapters */}
         {intro && (
@@ -130,9 +139,11 @@ export default function BookDetailPage(): JSX.Element {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-[11px] font-semibold uppercase tracking-widest text-gold-deep">
-                Start here
+                {t('book.startHere')}
               </p>
-              <h3 className="truncate font-serif text-lg font-bold text-ink">Introduction</h3>
+              <h3 className="truncate font-serif text-lg font-bold text-ink">
+                {t('book.introduction')}
+              </h3>
             </div>
           </button>
         )}
@@ -140,7 +151,7 @@ export default function BookDetailPage(): JSX.Element {
         {/* chapters */}
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
           <h2 className="font-serif text-2xl font-bold text-ink">
-            Chapters <span className="text-base font-normal text-muted">({rest.length})</span>
+            {t('book.chapters')} <span className="text-base font-normal text-muted">({rest.length})</span>
           </h2>
           <div className="flex items-center gap-3">
             {isAdmin && (
@@ -149,7 +160,7 @@ export default function BookDetailPage(): JSX.Element {
                 onClick={() => setManageOpen(true)}
                 className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-cream-surface px-4 py-2 text-sm font-semibold text-gold-deep transition-colors hover:border-gold/50 hover:bg-gold/10"
               >
-                <ListOrdered className="h-4 w-4" /> Manage chapters
+                <ListOrdered className="h-4 w-4" /> {t('book.manageChapters')}
               </button>
             )}
             <CurrencySelector value={currency} onChange={setCurrency} />
