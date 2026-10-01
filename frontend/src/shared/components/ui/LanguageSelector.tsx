@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Check, Globe } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import { LANGS, useLocaleStore, type Lang } from '@app/store';
+import { FlagIcon } from './FlagIcon';
 import { useT } from '@/i18n';
 import { cn } from '@shared/utils/cn';
 
@@ -48,10 +49,11 @@ export function LanguageSelector({ className }: { className?: string }): JSX.Ele
         aria-haspopup="menu"
         aria-expanded={open}
         title={t('common.language')}
-        className="inline-flex h-10 items-center gap-1.5 rounded-full border border-hairline bg-surface px-3 text-ink shadow-soft transition-colors hover:border-gold/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
+        className="inline-flex h-10 items-center gap-1.5 rounded-full border border-hairline bg-surface px-2.5 text-ink shadow-soft transition-colors hover:border-gold/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-cream"
       >
-        <Globe className="h-5 w-5" />
+        <FlagIcon code={active.code} />
         <span className="text-sm font-semibold uppercase">{active.code}</span>
+        <ChevronDown className="h-4 w-4 text-muted" />
       </button>
 
       {open && (
@@ -71,11 +73,12 @@ export function LanguageSelector({ className }: { className?: string }): JSX.Ele
               onClick={() => choose(l.code)}
               dir={l.rtl ? 'rtl' : 'ltr'}
               className={cn(
-                'flex w-full items-center justify-between gap-2 px-3 py-2 text-sm transition-colors hover:bg-cream-surface',
+                'flex w-full items-center gap-2.5 px-3 py-2 text-sm transition-colors hover:bg-cream-surface',
                 l.code === lang ? 'font-semibold text-gold-deep' : 'text-body',
               )}
             >
-              <span>
+              <FlagIcon code={l.code} />
+              <span className="flex-1 text-start">
                 {l.native}
                 {l.native !== l.label && <span className="ml-1.5 text-xs text-muted">{l.label}</span>}
               </span>
