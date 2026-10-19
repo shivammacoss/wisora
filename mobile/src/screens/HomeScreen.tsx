@@ -27,8 +27,8 @@ const ROW_IMG_H = Math.round(ROW_IMG_W / 1.41);
 
 const logo = require('../../assets/logo.png');
 const logoDark = require('../../assets/logo_for_dark.png');
-const heroBanner = require('../../assets/hero_banner1.png');
-const heroBannerDark = require('../../assets/hero_banner_dark.png');
+const heroBanner = require('../../assets/hero_ban1.png');
+const heroBannerDark = require('../../assets/hero_ban2.png');
 const infoCard1 = require('../../assets/info_card1.png');
 const infoCard2 = require('../../assets/info_card2.png');
 const infoCard3 = require('../../assets/info_card3.png');
