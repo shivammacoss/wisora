@@ -4,8 +4,8 @@ import { useAuthStore, useThemeStore } from '@app/store';
 import { AuthModal } from '@features/auth';
 import { ThemeToggle } from '@shared/components/ui/ThemeToggle';
 import { ROUTES } from '@shared/constants';
-import heroBanner1 from '@assets/images/hero_banner1.png';
-import heroBannerDark from '@assets/images/hero_banner_dark.png';
+import heroBanner1 from '@assets/images/hero_ban1.png';
+import heroBannerDark from '@assets/images/hero_ban2.png';
 import {
   FeatureGrid,
   FeatureRows,
